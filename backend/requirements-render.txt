@@ -1,0 +1,27 @@
+# ==============================================================
+# Lightweight dependencies for Render.com deployment
+# Excludes sentence-transformers (200MB+ with PyTorch)
+# The RAG index is pre-built and included in the Docker image
+# ==============================================================
+
+# --- Core API Framework ---
+fastapi==0.115.9
+uvicorn[standard]==0.34.3
+python-multipart==0.0.20
+python-dotenv==1.1.0
+
+# --- RAG Pipeline (read-only, index pre-built) ---
+chromadb==1.0.7
+pypdf==5.6.0
+
+# --- LLM Providers ---
+google-genai==1.14.0
+groq==1.2.0
+
+# --- Weather Service ---
+requests==2.33.1
+httpx==0.28.1
+
+# --- Data / Utils ---
+pydantic==2.13.3
+numpy==2.2.5

@@ -22,7 +22,10 @@ Usage:
 
 from pathlib import Path
 from chromadb import PersistentClient
-from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+try:
+    from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
+except ImportError:
+    SentenceTransformerEmbeddingFunction = None
 
 
 # ============================================================================
@@ -80,14 +83,25 @@ class PestKnowledgeRetriever:
                 "Run 'python rag/build_index.py' first to build the index."
             )
 
-        self._embedding_fn = SentenceTransformerEmbeddingFunction(
-            model_name=self.model_name
-        )
+        # Try loading sentence-transformers embedding function
+        # Falls back to default if not installed (deploy mode)
+        try:
+            self._embedding_fn = SentenceTransformerEmbeddingFunction(
+                model_name=self.model_name
+            )
+        except Exception:
+            self._embedding_fn = None  # Use chromadb default
+
         self._client = PersistentClient(path=str(self.chroma_dir))
-        self._collection = self._client.get_collection(
-            name=self.collection_name,
-            embedding_function=self._embedding_fn,
-        )
+        if self._embedding_fn:
+            self._collection = self._client.get_collection(
+                name=self.collection_name,
+                embedding_function=self._embedding_fn,
+            )
+        else:
+            self._collection = self._client.get_collection(
+                name=self.collection_name,
+            )
 
     def is_ready(self) -> bool:
         """Check if the ChromaDB index exists and contains data."""
