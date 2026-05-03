@@ -1,0 +1,125 @@
+WHEAT PEST MANAGEMENT GUIDE
+============================
+Compiled from FAO, CIMMYT, and ICARDA agricultural research.
+
+COMMON WHEAT PESTS (relevant to IP102 dataset):
+
+1. WHEAT APHID (Sitobion avenae / Rhopalosiphum padi)
+----------------------------------------------------
+Identification: Small (2mm), green to reddish-brown, found on leaves and ears
+Damage: Sap sucking, honeydew, virus transmission (BYDV - Barley Yellow Dwarf Virus)
+Threshold: >5 aphids per ear at flowering, or >25 per tiller at stem elongation
+
+Chemical control:
+- Pirimicarb (Pirimor): Selective aphicide, safe for beneficial insects
+- Dimethoate: Systemic organophosphate
+- Imidacloprid: Seed treatment for early-season protection
+- Lambda-cyhalothrin: Foliar spray, broad-spectrum
+
+Biological control:
+- Parasitoid wasps: Aphidius rhopalosiphi, Aphidius ervi
+- Predators: Hoverfly larvae, ladybird beetles, lacewings
+- Conservation: Maintain field margins with flowering plants
+
+Cultural control:
+- Early sowing reduces exposure to autumn aphid migration
+- Resistant varieties where available
+- Avoid late nitrogen applications
+
+2. WHEAT STEM SAWFLY (Cephus cinctus)
+--------------------------------------
+Identification: Slender wasp-like insect, 8-13mm, black with yellow bands
+Damage: Larvae bore inside stems, causing lodging at harvest
+Yield loss: 10-30% in heavily infested fields
+
+Chemical control: Limited effectiveness (larvae protected inside stem)
+- Pyrethroid sprays at adult emergence (narrow window, 7-10 days)
+
+Biological control:
+- Bracon cephi: Parasitoid wasp that attacks larvae inside stem
+- Bracon lissogaster: Another key parasitoid
+
+Cultural control:
+- Solid-stem wheat varieties (most effective management tool)
+- Shallow stubble cutting to trap overwintering larvae
+- Crop rotation with non-host crops (canola, pulses)
+
+3. HESSIAN FLY (Mayetiola destructor)
+--------------------------------------
+Identification: Small dark midge, 2-3mm, resembles mosquito
+Damage: Larvae feed at base of leaf sheath, stunting growth
+Yield loss: 5-50% depending on timing of infestation
+
+Chemical control:
+- Seed treatments: Imidacloprid, thiamethoxam
+- Foliar: Generally not recommended (larvae are protected at feeding site)
+
+Cultural control:
+- Plant after "fly-free date" (specific to each region)
+- Use resistant varieties (most effective approach)
+- Destroy volunteer wheat plants
+- Deep plowing to bury puparia
+
+GENERAL WHEAT IPM PRINCIPLES:
+- Scout fields weekly from seedling through heading stage
+- Monitor aphid populations with yellow sticky traps
+- Preserve natural enemies by avoiding calendar-based spraying
+- Use economic thresholds before making treatment decisions
+- Rotate insecticide modes of action to prevent resistance
+
+SPRAYING SAFETY FOR WHEAT:
+- Do NOT spray during flowering (harmful to pollinators)
+- Wind speed must be <15 km/h
+- Do NOT spray if rain expected within 4 hours
+- Observe pre-harvest intervals strictly
+- Temperature: Best between 10-25°C for most products
+
+DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.
+
+
+SUGARCANE AND BEET PEST MANAGEMENT GUIDE
+==========================================
+
+1. BEET FLY (Pegomya betae / Pegomya hyoscyami)
+-------------------------------------------------
+Identification: Small grey fly, 6-7mm, lays eggs on leaf undersurface
+Damage: Larvae mine between leaf surfaces creating blisters/blotches
+Yield loss: 15-30% in sugar beet, reduced sugar content
+
+Chemical control:
+- Seed treatment: Imidacloprid, clothianidin (most common approach)
+- Foliar: Dimethoate, deltamethrin at larval emergence
+- Timing: Treat when >50% of plants have mines on cotyledons
+
+Biological control:
+- Opius pallipes: Parasitoid wasp
+- General predators: Ground beetles (Carabidae)
+
+Cultural control:
+- Remove weed hosts (Chenopodium, Atriplex species)
+- Early sowing for vigorous seedlings that tolerate damage
+- Deep plowing to bury pupae
+
+2. SUGARCANE BORER (Diatraea saccharalis)
+------------------------------------------
+Identification: Straw-colored moth, wingspan 20-25mm; cream larvae with brown head
+Damage: Internal stem boring, reduces sucrose content, kills growing point
+Yield loss: 10-20% in severely infested fields
+
+Chemical control:
+- Chlorantraniliprole: Applied as granule or drench at stem base
+- Tebufenozide: Insect growth regulator, selective for caterpillars
+- Limited effectiveness once larvae are inside stem
+
+Biological control:
+- Cotesia flavipes: Most successful biocontrol agent worldwide for sugarcane borer
+- Trichogramma galloi: Egg parasitoid, released in the millions
+- Release rates: 100,000-200,000 Trichogramma per hectare
+
+Cultural control:
+- Use pest-free planting material (clean seed cane)
+- Remove and destroy infested stalks
+- Harvest at ground level, destroy stubble
+- Biological control is the primary management strategy in most countries
+
+DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

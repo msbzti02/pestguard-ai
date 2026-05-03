@@ -1,0 +1,369 @@
+{
+  "timestamp": "2026-05-03T15:08:49.641906",
+  "total": 60,
+  "passed": 55,
+  "failed": 5,
+  "rate": "91.7%",
+  "results": [
+    {
+      "id": "T01",
+      "name": "API responds 200",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T02",
+      "name": "Health has required fields",
+      "passed": false,
+      "detail": "['status', 'project', 'version', 'uptime_seconds', 'timestamp']"
+    },
+    {
+      "id": "T03",
+      "name": "Running Stage 3+",
+      "passed": false,
+      "detail": null
+    },
+    {
+      "id": "T04",
+      "name": "VLM engine active",
+      "passed": false,
+      "detail": ""
+    },
+    {
+      "id": "T05",
+      "name": "Weather uses real API",
+      "passed": false,
+      "detail": ""
+    },
+    {
+      "id": "T06",
+      "name": "POST /predict responds",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T07",
+      "name": "Prediction has required fields",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T08",
+      "name": "Confidence in [0,1]",
+      "passed": true,
+      "detail": "conf=0.98"
+    },
+    {
+      "id": "T09",
+      "name": "Category ID in IP-102 range",
+      "passed": true,
+      "detail": "cat=24"
+    },
+    {
+      "id": "T10",
+      "name": "Rejects non-image file",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T11",
+      "name": "Rejects tiny image (<1KB)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T12",
+      "name": "Low-confidence simulation works",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T13",
+      "name": "VLM description non-empty",
+      "passed": true,
+      "detail": "len=173"
+    },
+    {
+      "id": "T14",
+      "name": "VLM output contains agri terms",
+      "passed": true,
+      "detail": "A winged beetle with dark brown coloring sitting on a corn stalk. Small bore hol"
+    },
+    {
+      "id": "T15",
+      "name": "VLM pre-filter exists in pipeline",
+      "passed": true,
+      "detail": "Confirmed: rejects non-pest images"
+    },
+    {
+      "id": "T16",
+      "name": "VLM handles JPEG",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T17",
+      "name": "VLM handles PNG upload",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T18",
+      "name": "VLM multi-provider available",
+      "passed": false,
+      "detail": "Gemini \u2192 Groq failover"
+    },
+    {
+      "id": "T19",
+      "name": "Chat endpoint responds",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T20",
+      "name": "Chat reply non-empty",
+      "passed": true,
+      "detail": "len=741"
+    },
+    {
+      "id": "T21",
+      "name": "Legal disclaimer present",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T22",
+      "name": "RAG sources returned",
+      "passed": true,
+      "detail": "count=5"
+    },
+    {
+      "id": "T23",
+      "name": "Source has file+page",
+      "passed": true,
+      "detail": "dict_keys(['source', 'page'])"
+    },
+    {
+      "id": "T24",
+      "name": "LLM provider reported",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T25",
+      "name": "Pest context enriches reply",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T26",
+      "name": "Low confidence flagged",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T27",
+      "name": "Session follow-up works",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T28",
+      "name": "Weather context in chat",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T29",
+      "name": "GET /weather responds 200",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T30",
+      "name": "Weather has all fields",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T31",
+      "name": "Temperature realistic (-50 to 60\u00b0C)",
+      "passed": true,
+      "detail": "11.4\u00b0C"
+    },
+    {
+      "id": "T32",
+      "name": "Wind speed \u2265 0",
+      "passed": true,
+      "detail": "28.7 km/h"
+    },
+    {
+      "id": "T33",
+      "name": "safe_to_spray is boolean",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T34",
+      "name": "Weather disclaimer present",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T35",
+      "name": "High wind triggers unsafe",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T36",
+      "name": "Multiple locations work",
+      "passed": true,
+      "detail": "Tokyo, London, Cape Town"
+    },
+    {
+      "id": "T37",
+      "name": "GET /heatmap responds",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T38",
+      "name": "Heatmap has data array",
+      "passed": true,
+      "detail": "count=10"
+    },
+    {
+      "id": "T39",
+      "name": "Entry has lat/lon/pest/count",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T40",
+      "name": "POST /heatmap/report works",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T41",
+      "name": "Coordinates anonymized to 0.1\u00b0",
+      "passed": true,
+      "detail": "grid_lat=40.1"
+    },
+    {
+      "id": "T42",
+      "name": "Duplicate increments count",
+      "passed": true,
+      "detail": "count=2"
+    },
+    {
+      "id": "T43",
+      "name": "Chat works without location",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T44",
+      "name": "Predict degrades gracefully",
+      "passed": true,
+      "detail": "VLM fallback to mock description if unavailable"
+    },
+    {
+      "id": "T45",
+      "name": "5 rapid health checks OK",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T46",
+      "name": "Bad input returns error (not crash)",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T47",
+      "name": "CORS enabled",
+      "passed": true,
+      "detail": "CORSMiddleware configured"
+    },
+    {
+      "id": "T48",
+      "name": "Multi-LLM failover configured",
+      "passed": true,
+      "detail": "Gemini \u2192 Groq chain in chatbot.py"
+    },
+    {
+      "id": "T49",
+      "name": "Empty message handled",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T50",
+      "name": "Long message (2000 chars) handled",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T51",
+      "name": "Invalid coords handled",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T52",
+      "name": "XSS not reflected raw",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T53",
+      "name": "SQLi attempt handled safely",
+      "passed": true,
+      "detail": "In-memory store, no SQL"
+    },
+    {
+      "id": "T54",
+      "name": "No PII in heatmap response",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T55",
+      "name": "Swagger /docs accessible",
+      "passed": true,
+      "detail": ""
+    },
+    {
+      "id": "T56",
+      "name": "Health latency < 3s",
+      "passed": true,
+      "detail": "2334ms"
+    },
+    {
+      "id": "T57",
+      "name": "Weather latency < 5s",
+      "passed": true,
+      "detail": "2771ms"
+    },
+    {
+      "id": "T58",
+      "name": "Chat latency < 15s",
+      "passed": true,
+      "detail": "8954ms"
+    },
+    {
+      "id": "T59",
+      "name": "Heatmap latency < 3s",
+      "passed": true,
+      "detail": "2308ms"
+    },
+    {
+      "id": "T60",
+      "name": "Frontend serves < 3s",
+      "passed": true,
+      "detail": "2356ms"
+    }
+  ]
+}

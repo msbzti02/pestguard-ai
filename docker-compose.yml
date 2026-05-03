@@ -1,0 +1,51 @@
+# ==============================================================
+# Docker Compose — PestGuard AI
+# Department 2 Capstone · BAU 2026
+# ==============================================================
+# Usage:
+#   docker-compose up --build        (first time / after code changes)
+#   docker-compose up -d             (background)
+#   docker-compose down              (stop)
+#   docker-compose logs -f api       (follow logs)
+# ==============================================================
+
+services:
+  # ── PestGuard API Backend ──────────────────────────────────
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: pestguard-api
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      # Persist uploads and ChromaDB index across restarts
+      - pestguard-uploads:/app/uploads
+      - pestguard-data:/app/data
+      - pestguard-logs:/app/logs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      start_period: 60s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 512M
+
+volumes:
+  pestguard-uploads:
+    driver: local
+  pestguard-data:
+    driver: local
+  pestguard-logs:
+    driver: local

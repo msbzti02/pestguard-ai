@@ -1,0 +1,43 @@
+# ==============================================================
+# Docker Ignore — PestGuard AI Backend
+# ==============================================================
+
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+
+# Environment (secrets — passed at runtime)
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs & uploads (runtime data)
+logs/
+uploads/
+
+# Tests (not needed in prod image)
+tests/
+test_*.py
+
+# Dasher source (already compiled into static/)
+../dasher-1.0.0/
+
+# Git
+.git/
+.gitignore
+
+# Docker
+Dockerfile
+docker-compose.yml

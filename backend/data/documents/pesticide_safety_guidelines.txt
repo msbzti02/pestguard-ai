@@ -1,0 +1,35 @@
+PESTICIDE APPLICATION SAFETY GUIDELINES
+==========================================
+Source: Compiled from FAO International Code of Conduct on Pesticide Management.
+
+WEATHER CONDITIONS FOR SAFE SPRAYING:
+- Wind speed: Must be below 15 km/h (ideal: 3-10 km/h)
+- Rain: Do NOT spray if rain expected within 6 hours
+- Temperature: Avoid spraying above 35°C (increased evaporation/drift)
+- Humidity: Best between 40-80% relative humidity
+- Hail: NEVER spray during or immediately after hailstorm
+- Snow: Do NOT apply pesticides on frozen or snow-covered crops
+
+PERSONAL PROTECTIVE EQUIPMENT (PPE):
+- Chemical-resistant gloves
+- Protective eyewear or face shield
+- Respiratory protection (for toxic compounds)
+- Long-sleeved clothing and boots
+
+APPLICATION TIMING:
+- Early morning (before 10 AM) or late evening (after 4 PM)
+- Avoid midday heat
+- Apply when target pests are most active/vulnerable
+
+ENVIRONMENTAL SAFETY:
+- Maintain buffer zones near water bodies (minimum 10 meters)
+- Do not contaminate water sources
+- Dispose of empty containers safely
+- Record all applications (date, product, rate, conditions)
+
+PRE-HARVEST INTERVALS (PHI):
+- Each pesticide has a mandatory waiting period before harvest
+- Typical PHI ranges: 3 days to 21 days
+- NEVER harvest before PHI expires
+
+⚠️ DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

@@ -1,0 +1,26 @@
+# ================================================================
+# Render.com Deployment Configuration
+# PestGuard AI — Department 2 Capstone
+# ================================================================
+# Deploy: Connect your GitHub repo → Render auto-deploys
+# Free tier: Spins down after 15min idle, cold-start ~30s
+# ================================================================
+
+services:
+  - type: web
+    name: pestguard-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: PORT
+        value: "8000"
+    healthCheckPath: /
+    autoDeploy: true

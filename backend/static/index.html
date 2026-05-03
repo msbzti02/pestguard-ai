@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PestGuard AI — Deep Learning Insect Pest Recognition with RAG, Weather Safety, and Outbreak Mapping. Department 2 Capstone.">
+  <title>PestGuard AI — Intelligent Pest Recognition Dashboard</title>
+  <!-- Color Modes (must be before CSS) -->
+  <script src="/static/js/color-modes.js"></script>
+  <script>
+    // Default to expanded sidebar
+    if (localStorage.getItem('sidebarExpanded') === 'false') {
+      document.documentElement.classList.add('collapsed');
+      document.documentElement.classList.remove('expanded');
+    } else {
+      document.documentElement.classList.remove('collapsed');
+      document.documentElement.classList.add('expanded');
+      localStorage.setItem('sidebarExpanded', 'true');
+    }
+  </script>
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.css">
+  <!-- Dasher Theme -->
+  <link rel="stylesheet" href="/static/css/dasher-theme.css">
+  <!-- Leaflet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <style>
+    .bg-gradient-mixed{background:linear-gradient(135deg,#10b981 0%,#3b82f6 50%,#8b5cf6 100%)!important}
+    .page-section{display:none}.page-section.active{display:block}
+    .upload-zone{border:2px dashed rgba(255,255,255,0.15);border-radius:1rem;padding:3rem;text-align:center;cursor:pointer;transition:all .3s;position:relative}
+    .upload-zone:hover{border-color:var(--bs-primary);background:rgba(16,185,129,0.05)}
+    .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
+    .chat-messages{height:420px;overflow-y:auto}
+    .chat-bubble{max-width:80%;padding:.75rem 1rem;border-radius:1rem;margin-bottom:.5rem;font-size:.9rem;line-height:1.6}
+    .chat-bubble.user{background:var(--bs-primary);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+    .chat-bubble.assistant{background:var(--bs-gray-800);border:1px solid var(--bs-border-color);border-bottom-left-radius:4px}
+    .typing-dots{display:flex;gap:4px;padding:.75rem 1rem}
+    .typing-dots span{width:8px;height:8px;border-radius:50%;background:var(--bs-primary);animation:tbounce 1.4s infinite}
+    .typing-dots span:nth-child(2){animation-delay:.2s}.typing-dots span:nth-child(3){animation-delay:.4s}
+    @keyframes tbounce{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-8px);opacity:1}}
+    .safety-pill{font-size:1.1rem;font-weight:700;padding:.5rem 1.5rem;border-radius:2rem;display:inline-block}
+    .safety-pill.safe{background:rgba(16,185,129,0.15);color:#10b981;border:1px solid rgba(16,185,129,0.3)}
+    .safety-pill.unsafe{background:rgba(239,68,68,0.15);color:#ef4444;border:1px solid rgba(239,68,68,0.3);animation:pulseR 2s infinite}
+    @keyframes pulseR{0%,100%{box-shadow:none}50%{box-shadow:0 0 20px rgba(239,68,68,0.2)}}
+    .conf-bar{height:8px;border-radius:4px;background:rgba(255,255,255,0.1);overflow:hidden}
+    .conf-bar-fill{height:100%;border-radius:4px;transition:width 1s ease}
+    .conf-high{background:#10b981}.conf-med{background:#f59e0b}.conf-low{background:#ef4444}
+    #heatmap-box{height:450px;border-radius:.75rem;overflow:hidden}
+    .disclaimer-box{background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:.5rem;padding:.65rem 1rem;font-size:.8rem;color:#f59e0b}
+    .toast-stack{position:fixed;top:80px;right:1.5rem;z-index:9999}
+    .source-tag{display:inline-block;padding:.15rem .5rem;background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);border-radius:4px;font-size:.7rem;color:#3b82f6;margin:.1rem}
+  </style>
+</head>
+<body>
+<!-- Toast container -->
+<div class="toast-stack" id="toasts"></div>
+
+<!-- ═══ SIDEBAR ═══ -->
+<div id="miniSidebar">
+  <div class="brand-logo">
+    <a class="d-none d-md-flex align-items-center gap-2" href="#">
+      <img src="/static/img/brand/logo/logo-icon.svg" alt="PestGuard" onerror="this.outerHTML='<span style=font-size:1.5rem>🔬</span>'">
+      <span class="fw-bold fs-4 site-logo-text">PestGuard</span>
+    </a>
+  </div>
+  <ul class="navbar-nav flex-column">
+    <!-- Dashboard -->
+    <li class="nav-item">
+      <a class="nav-link active" href="#" data-page="dashboard">
+        <span class="nav-icon"><i class="ti ti-dashboard fs-5"></i></span>
+        <span class="text">Dashboard</span>
+      </a>
+    </li>
+    <!-- Predict -->
+    <li class="nav-item">
+      <a class="nav-link" href="#" data-page="predict">
+        <span class="nav-icon"><i class="ti ti-camera fs-5"></i></span>
+        <span class="text">Pest Predict</span>
+      </a>
+    </li>
+    <!-- Chat -->
+    <li class="nav-item">
+      <a class="nav-link" href="#" data-page="chat">
+        <span class="nav-icon"><i class="ti ti-message-dots fs-5"></i></span>
+        <span class="text">AI Advisor</span>
+      </a>
+    </li>
+    <!-- Section -->
+    <li class="nav-item">
+      <div class="nav-heading">Environment</div>
+      <hr class="mx-5 nav-line mb-1">
+    </li>
+    <!-- Weather -->
+    <li class="nav-item">
+      <a class="nav-link" href="#" data-page="weather">
+        <span class="nav-icon"><i class="ti ti-cloud fs-5"></i></span>
+        <span class="text">Spray Safety</span>
+      </a>
+    </li>
+    <!-- Heatmap -->
+    <li class="nav-item">
+      <a class="nav-link" href="#" data-page="heatmap">
+        <span class="nav-icon"><i class="ti ti-map-pin fs-5"></i></span>
+        <span class="text">Outbreak Map</span>
+      </a>
+    </li>
+    <!-- Section -->
+    <li class="nav-item">
+      <div class="nav-heading">System</div>
+      <hr class="mx-5 nav-line mb-1">
+    </li>
+    <!-- API Docs -->
+    <li class="nav-item">
+      <a class="nav-link" href="/docs" target="_blank">
+        <span class="nav-icon"><i class="ti ti-api fs-5"></i></span>
+        <span class="text">API Docs</span>
+      </a>
+    </li>
+    <!-- Bottom user -->
+    <li>
+      <div class="text-center py-5 upgrade-ui">
+        <div>
+          <div class="icon-shape icon-lg rounded-circle bg-success-darker text-success-lighter mx-auto" style="width:48px;height:48px;display:flex;align-items:center;justify-content:center">
+            <i class="ti ti-plant fs-3"></i>
+          </div>
+          <div class="my-3">
+            <h5 class="mb-1 fs-6">Dept. 2 — Capstone</h5>
+            <span class="text-secondary">BAU · 2026</span>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<!-- ═══ MAIN CONTENT ═══ -->
+<div id="content" class="position-relative h-100">
+  <!-- Topbar -->
+  <div class="border-bottom px-6 py-3 d-flex align-items-center justify-content-between">
+    <div class="d-flex align-items-center gap-3">
+      <button class="btn btn-ghost-secondary btn-icon sidebar-toggle d-none d-md-flex"><i class="ti ti-menu-2 fs-5"></i></button>
+      <h5 class="mb-0" id="page-title">Dashboard</h5>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <span class="badge bg-success-subtle text-success-emphasis" id="status-badge"><i class="ti ti-circle-filled" style="font-size:6px"></i> Online</span>
+      <!-- Dark/Light toggle -->
+      <div class="dropdown">
+        <button class="btn btn-ghost-secondary btn-icon" data-bs-toggle="dropdown"><i class="ti ti-sun-moon fs-5"></i></button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><button class="dropdown-item" data-bs-theme-value="light"><i class="ti ti-sun me-2"></i>Light</button></li>
+          <li><button class="dropdown-item" data-bs-theme-value="dark"><i class="ti ti-moon me-2"></i>Dark</button></li>
+          <li><button class="dropdown-item" data-bs-theme-value="auto"><i class="ti ti-device-desktop me-2"></i>Auto</button></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Page Container -->
+  <div class="custom-container py-6">
+
+    <!-- ═══ DASHBOARD PAGE ═══ -->
+    <div class="page-section active" id="page-dashboard">
+      <!-- Hero -->
+      <div class="row mb-6 g-6">
+        <div class="col-xl-8 col-lg-6">
+          <div class="bg-gradient-mixed p-8 py-10 rounded-3">
+            <h1 class="fs-3 text-white">🌾 PestGuard AI Dashboard</h1>
+            <p class="mb-0 text-white-50">Deep Learning-Based Insect Pest Recognition System</p>
+            <p class="text-white-50">Real-time predictions, RAG-powered advice, and weather-aware spray safety.</p>
+            <a href="#" class="btn btn-dark" onclick="nav('predict');return false"><i class="ti ti-camera me-1"></i>Start Prediction</a>
+            <a href="#" class="btn btn-outline-light ms-2" onclick="nav('chat');return false"><i class="ti ti-message-dots me-1"></i>Ask Advisor</a>
+          </div>
+        </div>
+        <div class="col-xl-4 col-lg-6">
+          <div class="card card-lg h-100">
+            <div class="card-body">
+              <h5 class="mb-3"><i class="ti ti-activity-heartbeat me-2 text-success"></i>System Status</h5>
+              <div id="sys-status"><div class="spinner-border spinner-border-sm text-primary"></div> Connecting...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Stat Cards -->
+      <div class="row row-cols-1 row-cols-xl-4 row-cols-md-2 mb-6 g-6">
+        <div class="col"><div class="card card-lg"><div class="card-body d-flex flex-column gap-3">
+          <div class="d-flex align-items-center gap-3"><div class="icon-shape icon-lg rounded-circle bg-success-darker text-success-lighter"><i class="ti ti-database fs-4"></i></div><div>Knowledge Base</div></div>
+          <div class="d-flex justify-content-between align-items-center lh-1"><div class="fs-3 fw-bold">4,766</div><span class="text-success small">chunks</span></div>
+        </div></div></div>
+        <div class="col"><div class="card card-lg"><div class="card-body d-flex flex-column gap-3">
+          <div class="d-flex align-items-center gap-3"><div class="icon-shape icon-lg rounded-circle bg-info-darker text-info-lighter"><i class="ti ti-file-text fs-4"></i></div><div>Source Documents</div></div>
+          <div class="d-flex justify-content-between align-items-center lh-1"><div class="fs-3 fw-bold">20</div><span class="text-info small">PDFs</span></div>
+        </div></div></div>
+        <div class="col"><div class="card card-lg"><div class="card-body d-flex flex-column gap-3">
+          <div class="d-flex align-items-center gap-3"><div class="icon-shape icon-lg rounded-circle bg-warning-darker text-warning-lighter"><i class="ti ti-brain fs-4"></i></div><div>AI Providers</div></div>
+          <div class="d-flex justify-content-between align-items-center lh-1"><div class="fs-3 fw-bold">3</div><span class="text-warning small">failover</span></div>
+        </div></div></div>
+        <div class="col"><div class="card card-lg"><div class="card-body d-flex flex-column gap-3">
+          <div class="d-flex align-items-center gap-3"><div class="icon-shape icon-lg rounded-circle bg-danger-darker text-danger-lighter"><i class="ti ti-bug fs-4"></i></div><div>Pest Species</div></div>
+          <div class="d-flex justify-content-between align-items-center lh-1"><div class="fs-3 fw-bold">102</div><span class="text-danger small">IP-102</span></div>
+        </div></div></div>
+      </div>
+      <!-- Charts -->
+      <div class="row g-6 mb-6">
+        <div class="col-xl-8"><div class="card card-lg"><div class="card-body"><h5 class="mb-4"><i class="ti ti-chart-bar me-2"></i>Top Detected Pest Species (IP-102)</h5><div id="archChart"></div></div></div></div>
+        <div class="col-xl-4"><div class="card card-lg"><div class="card-body"><h5 class="mb-4"><i class="ti ti-chart-donut me-2"></i>Pest by Crop Type</h5><div id="pipeChart"></div></div></div></div>
+      </div>
+      <!-- Common Pests Table -->
+      <div class="row g-6">
+        <div class="col-12"><div class="card card-lg">
+          <div class="card-header border-bottom-0"><h5 class="mb-0"><i class="ti ti-bug me-2"></i>Most Common Pests in IP-102 Dataset</h5></div>
+          <div class="table-responsive"><table class="table text-nowrap mb-0 table-centered table-hover">
+            <thead><tr><th>Pest Species</th><th>Crop Host</th><th>Category ID</th><th>Severity</th><th>Images</th></tr></thead>
+            <tbody>
+              <tr><td><i class="ti ti-bug me-2 text-danger"></i>Rice Leafhopper</td><td>Rice (Oryza sativa)</td><td>#28</td><td><span class="badge text-danger-emphasis bg-danger-subtle">High</span></td><td>1,284</td></tr>
+              <tr><td><i class="ti ti-bug me-2 text-danger"></i>Fall Armyworm</td><td>Corn (Zea mays)</td><td>#45</td><td><span class="badge text-danger-emphasis bg-danger-subtle">High</span></td><td>1,156</td></tr>
+              <tr><td><i class="ti ti-bug me-2 text-warning"></i>Green Peach Aphid</td><td>Vegetables, Tobacco</td><td>#12</td><td><span class="badge text-warning-emphasis bg-warning-subtle">Medium</span></td><td>987</td></tr>
+              <tr><td><i class="ti ti-bug me-2 text-warning"></i>Corn Borer</td><td>Corn, Sorghum</td><td>#56</td><td><span class="badge text-warning-emphasis bg-warning-subtle">Medium</span></td><td>934</td></tr>
+              <tr><td><i class="ti ti-bug me-2 text-info"></i>Whitefly</td><td>Cotton, Tomato</td><td>#78</td><td><span class="badge text-info-emphasis bg-info-subtle">Low-Med</span></td><td>876</td></tr>
+              <tr><td><i class="ti ti-bug me-2 text-info"></i>Migratory Locust</td><td>Multiple Crops</td><td>#91</td><td><span class="badge text-danger-emphasis bg-danger-subtle">High</span></td><td>812</td></tr>
+            </tbody>
+          </table></div>
+        </div></div>
+      </div>
+    </div>
+
+    <!-- ═══ PREDICT PAGE ═══ -->
+    <div class="page-section" id="page-predict">
+      <h4 class="mb-4"><i class="ti ti-camera me-2"></i>Pest Prediction</h4>
+      <div class="card card-lg mb-4"><div class="card-body">
+        <div class="upload-zone" id="upload-zone">
+          <input type="file" id="file-input" accept="image/*">
+          <div class="fs-1 mb-2">📷</div>
+          <p class="mb-1"><strong>Click or drag</strong> a pest image here</p>
+          <small class="text-secondary">JPEG, PNG, WebP · Max 10MB</small>
+        </div>
+        <div id="preview-area" style="display:none" class="mt-4">
+          <img id="preview-img" class="rounded border w-100" style="max-height:350px;object-fit:contain" alt="Pest Preview">
+          <div class="d-flex gap-2 mt-3 flex-wrap align-items-center">
+            <button class="btn btn-primary" id="pred-btn" onclick="submitPrediction()"><i class="ti ti-search me-1"></i>Analyze Pest</button>
+            <button class="btn btn-outline-secondary" onclick="resetUpload()"><i class="ti ti-x me-1"></i>Clear</button>
+            <div class="form-check ms-3"><input type="checkbox" class="form-check-input" id="sim-low"><label class="form-check-label small text-secondary" for="sim-low">Simulate low confidence</label></div>
+          </div>
+        </div>
+      </div></div>
+      <div id="pred-result"></div>
+    </div>
+
+    <!-- ═══ CHAT PAGE ═══ -->
+    <div class="page-section" id="page-chat">
+      <h4 class="mb-4"><i class="ti ti-message-dots me-2"></i>AI Agricultural Advisor</h4>
+      <div id="chat-ctx"></div>
+      <div class="card card-lg">
+        <div class="card-body p-0">
+          <div class="chat-messages p-4 d-flex flex-column" id="chat-msgs">
+            <div class="text-center text-secondary py-5"><div class="fs-1 mb-2">🌾</div>Ask about pest management, treatment timing, or safety precautions...</div>
+          </div>
+          <div class="border-top p-3 d-flex gap-2">
+            <input type="text" class="form-control" id="chat-input" placeholder="How do I treat fall armyworm on corn?" onkeydown="if(event.key==='Enter')sendChat()">
+            <button class="btn btn-primary px-4" id="chat-btn" onclick="sendChat()"><i class="ti ti-send me-1"></i>Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ WEATHER PAGE ═══ -->
+    <div class="page-section" id="page-weather">
+      <h4 class="mb-4"><i class="ti ti-cloud me-2"></i>Weather & Spray Safety</h4>
+      <div class="card card-lg mb-4"><div class="card-body">
+        <div class="row g-3 align-items-end">
+          <div class="col-auto"><label class="form-label small">Latitude</label><input type="number" step="0.01" class="form-control" id="w-lat" value="41.0" style="width:130px"></div>
+          <div class="col-auto"><label class="form-label small">Longitude</label><input type="number" step="0.01" class="form-control" id="w-lon" value="29.0" style="width:130px"></div>
+          <div class="col-auto"><button class="btn btn-primary" id="w-btn" onclick="fetchWeather()"><i class="ti ti-search me-1"></i>Check</button></div>
+          <div class="col-auto"><button class="btn btn-outline-secondary" onclick="useMyLoc()"><i class="ti ti-current-location me-1"></i>My Location</button></div>
+        </div>
+      </div></div>
+      <div id="weather-result"></div>
+    </div>
+
+    <!-- ═══ HEATMAP PAGE ═══ -->
+    <div class="page-section" id="page-heatmap">
+      <h4 class="mb-4"><i class="ti ti-map-pin me-2"></i>Regional Pest Outbreak Map</h4>
+      <div class="card card-lg mb-4"><div class="card-body p-0"><div id="heatmap-box"></div></div></div>
+      <div class="card card-lg"><div class="card-body">
+        <h5 class="mb-3"><i class="ti ti-map-pin-plus me-2"></i>Report a Sighting</h5>
+        <div class="row g-3 align-items-end">
+          <div class="col-auto"><label class="form-label small">Latitude</label><input type="number" step="0.01" class="form-control form-control-sm" id="h-lat" value="39.9" style="width:100px"></div>
+          <div class="col-auto"><label class="form-label small">Longitude</label><input type="number" step="0.01" class="form-control form-control-sm" id="h-lon" value="32.8" style="width:100px"></div>
+          <div class="col-auto"><label class="form-label small">Pest Type</label><select class="form-select form-select-sm" id="h-pest"><option>Aphid</option><option>Rice Leafhopper</option><option>Corn Borer</option><option>Fall Armyworm</option><option>Locust</option><option>Whitefly</option></select></div>
+          <div class="col-auto"><button class="btn btn-primary btn-sm" onclick="submitReport()"><i class="ti ti-send me-1"></i>Submit</button></div>
+        </div>
+        <div id="report-msg" class="mt-2 small"></div>
+        <div class="disclaimer-box mt-3"><i class="ti ti-lock me-1"></i>Privacy: Coordinates rounded to 0.1° (~11km grid). No personal data stored.</div>
+      </div></div>
+    </div>
+
+  </div>
+  <!-- Footer -->
+  <div class="border-top px-6 py-3 text-center small text-secondary">
+    © 2026 PestGuard AI — Department 2 Capstone · BAU. Powered by <a href="https://codescandy.com" target="_blank" class="text-secondary">Dasher</a>.
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/simplebar@latest/dist/simplebar.min.js"></script>
+<script src="/static/js/sidebarnav.js"></script>
+<script src="/static/js/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/static/js/dashboard.js"></script>
+</body>
+</html>

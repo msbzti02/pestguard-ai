@@ -1,0 +1,37 @@
+APHID PEST MANAGEMENT GUIDE
+============================
+Source: Compiled from FAO, CABI, and PlantVillage references.
+
+IDENTIFICATION:
+- Small (1-3mm), soft-bodied insects, usually green, black, or brown.
+- Found in clusters on stems, leaves, and buds.
+- Produce honeydew, which attracts ants and promotes sooty mold.
+
+DAMAGE:
+- Suck plant sap, causing leaf curling, yellowing, and stunted growth.
+- Vector for many plant viruses.
+- Severe infestations can reduce crop yield by 20-80%.
+
+CHEMICAL CONTROL:
+- Imidacloprid (neonicotinoid) — effective but harmful to pollinators.
+- Pymetrozine — selective aphicide, safer for beneficial insects.
+- Lambda-cyhalothrin — broad-spectrum, use as last resort.
+- ALWAYS follow label instructions. Do NOT spray during rain or high wind.
+
+BIOLOGICAL CONTROL:
+- Ladybugs (Coccinellidae) — natural predators, release 1500/acre.
+- Lacewings (Chrysoperla carnea) — larvae consume ~200 aphids each.
+- Parasitic wasps (Aphidius colemani) — lay eggs inside aphids.
+
+CULTURAL CONTROL:
+- Remove infested plant parts.
+- Use reflective mulch to repel aphids.
+- Avoid excessive nitrogen fertilization (promotes soft growth that attracts aphids).
+
+TREATMENT TIMING:
+- Best applied early morning or late evening.
+- Do NOT spray when temperature exceeds 35°C.
+- Do NOT spray if rain is expected within 6 hours.
+- Wind speed must be below 15 km/h for effective application.
+
+⚠️ DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

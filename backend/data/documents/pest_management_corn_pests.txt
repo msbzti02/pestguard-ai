@@ -1,0 +1,23 @@
+CORN PEST MANAGEMENT GUIDE
+============================
+Source: Compiled from FAO and CIMMYT references.
+
+COMMON CORN PESTS:
+1. Corn Borer (Ostrinia nubilalis / Ostrinia furnacalis)
+2. Fall Armyworm (Spodoptera frugiperda)
+3. Corn Rootworm (Diabrotica species)
+
+CORN BORER — MANAGEMENT:
+- Chemical: Bt (Bacillus thuringiensis) sprays at early larval stage
+- Chemical: Chlorantraniliprole for severe infestations
+- Biological: Trichogramma ostriniae egg parasitoid
+- Cultural: Destroy crop residues after harvest, rotate with non-host crops
+- Threshold: Treat when 50% of plants show fresh whorl damage
+
+FALL ARMYWORM — MANAGEMENT:
+- Chemical: Spinetoram, Emamectin benzoate
+- Biological: Telenomus remus parasitoid, NPV (Nuclear Polyhedrosis Virus)
+- Cultural: Early planting, intercropping with legumes
+- Monitoring: Use pheromone traps for early detection
+
+⚠️ DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

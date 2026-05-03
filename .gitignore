@@ -1,0 +1,45 @@
+# ================================================================
+# .gitignore — PestGuard AI
+# ================================================================
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+venv/
+.venv/
+
+# Environment (secrets)
+.env
+backend/.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Runtime data
+backend/uploads/*
+!backend/uploads/.gitkeep
+backend/logs/*
+!backend/logs/.gitkeep
+
+# ChromaDB (auto-built)
+backend/data/chroma_db/
+
+# Node (if any)
+node_modules/
+
+# Docker volumes
+.docker/
+
+# Dasher template (reference only, not needed for deployment)
+# dasher-1.0.0/

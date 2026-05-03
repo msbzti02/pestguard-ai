@@ -1,0 +1,35 @@
+RICE PEST MANAGEMENT GUIDE
+============================
+Source: Compiled from FAO and IRRI (International Rice Research Institute) references.
+
+COMMON RICE PESTS (from IP102 dataset):
+1. Rice Leaf Roller (Cnaphalocrocis medinalis)
+2. Rice Leaf Caterpillar
+3. Paddy Stem Maggot (Chlorops oryzae)
+4. Asiatic Rice Borer (Chilo suppressalis)
+5. Yellow Rice Borer (Scirpophaga incertulas)
+
+RICE LEAF ROLLER — MANAGEMENT:
+- Chemical: Chlorantraniliprole, Fipronil (apply at early infestation)
+- Biological: Trichogramma parasitoid release
+- Cultural: Maintain field hygiene, remove weeds
+- Threshold: Treat when >15% of leaves show folding damage
+
+RICE STEM BORER — MANAGEMENT:
+- Chemical: Carbofuran granules in paddy water, Cartap hydrochloride
+- Biological: Release of Trichogramma japonicum egg parasitoids
+- Cultural: Harvest at ground level, destroy stubble
+- Threshold: Treat when >10% of tillers show dead hearts
+
+GENERAL RICE IPM PRINCIPLES:
+- Scout fields weekly during critical growth stages
+- Use economic threshold levels before deciding to spray
+- Rotate pesticide classes to prevent resistance
+- Preserve natural enemies when possible
+
+SPRAYING SAFETY FOR RICE PADDIES:
+- Never spray when paddy water level is high (runoff contamination)
+- Allow 7-14 day pre-harvest interval depending on pesticide
+- Do NOT spray during flowering (harmful to pollinators)
+
+⚠️ DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

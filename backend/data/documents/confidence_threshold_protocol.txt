@@ -1,0 +1,28 @@
+CONFIDENCE THRESHOLD & PREDICTION RELIABILITY PROTOCOL
+=========================================================
+System Internal Document — Department 2
+
+THRESHOLD: 0.70 (70%) Softmax Confidence
+
+WHEN CONFIDENCE >= 0.70:
+- System provides full pest identification
+- LLM agent gives pesticide recommendations
+- Treatment timing and alternative methods are shown
+- Grad-CAM visualization is displayed
+
+WHEN CONFIDENCE < 0.70:
+- System flags prediction as UNRELIABLE
+- NO specific pesticide recommendations are given
+- User is warned: "Low confidence detection"
+- User is prompted to upload a clearer image
+- The chatbot responds with general pest identification tips only
+
+FALSE DISCOVERY RATE (FDR) TARGET: < 10%
+- The system must correctly flag at least 90% of incorrect predictions
+- FDR is measured across the test set after D3 delivers the model
+
+RATIONALE:
+- Agricultural pesticide misapplication can cause crop damage, environmental harm,
+  and financial loss to farmers
+- A wrong diagnosis leading to wrong pesticide is worse than no diagnosis at all
+- The 70% threshold was selected based on IP102 model performance literature

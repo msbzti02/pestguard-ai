@@ -1,0 +1,37 @@
+# ==============================================================
+# Department 2 — Backend Dependencies
+# Deep Learning-Based Insect Pest Recognition System
+# Stage 5 — Robustness hardening (logging, retry, validation)
+#   New modules: core/logger.py, core/retry.py, core/validators.py
+#   No new pip packages — uses stdlib (logging, functools, time)
+# ==============================================================
+
+# --- Core API Framework ---
+fastapi==0.115.9
+uvicorn[standard]==0.34.3
+python-multipart==0.0.20
+python-dotenv==1.1.0
+
+# --- RAG Pipeline (Stage 2) ---
+langchain==0.3.25
+langchain-community==0.3.24
+langchain-text-splitters==0.3.8
+chromadb==1.0.7
+sentence-transformers==5.0.0
+pypdf==5.6.0
+tiktoken==0.9.0
+
+# --- LLM Providers (Stage 2) ---
+google-genai==1.14.0
+groq==1.2.0
+
+# --- VLM Image Description (Stage 3) ---
+# Uses same google-genai and groq packages above for vision APIs
+
+# --- Weather Service (Stage 3) ---
+requests==2.33.1
+httpx==0.28.1
+
+# --- Data / Utils ---
+pydantic==2.13.3
+numpy==2.2.5

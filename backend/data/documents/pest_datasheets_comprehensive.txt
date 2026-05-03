@@ -1,0 +1,364 @@
+COMPREHENSIVE PEST DATASHEET — COTTON/MELON APHID (Aphis gossypii)
+====================================================================
+Compiled from FAO, university extension services, and agricultural research databases.
+
+TAXONOMY:
+- Order: Hemiptera
+- Family: Aphididae
+- Scientific name: Aphis gossypii Glover
+- Common names: Cotton aphid, Melon aphid, Cucurbit aphid
+
+IDENTIFICATION:
+- Body length: 1.0–1.8 mm (wingless), up to 2.2 mm (winged)
+- Color: Variable — light green, dark green, yellowish, or nearly black
+- Cornicles (tail pipes): Short, dark, cylindrical
+- Antennae: Shorter than body length
+- Distinguish from other aphids by smaller body size and darker cornicles
+
+HOST PLANTS:
+- Primary: Cotton, melon, cucumber, squash, watermelon
+- Secondary: Citrus, eggplant, peppers, okra, hibiscus
+- Over 700 host plant species recorded worldwide
+
+GEOGRAPHIC DISTRIBUTION:
+- Worldwide distribution in tropical, subtropical, and temperate regions
+- Common in: Turkey, Mediterranean basin, South/Southeast Asia, Africa, Americas
+- Active year-round in warm climates; seasonal in temperate zones
+
+BIOLOGY AND LIFECYCLE:
+- Reproduction: Parthenogenetic (asexual) in warm climates — females give live birth
+- Generation time: 7–10 days at 25°C
+- Offspring per female: 40–80 nymphs
+- Population doubling time: As fast as 3–4 days under optimal conditions
+- Overwinters as eggs on primary hosts in cold climates
+- Winged forms develop when colonies become crowded (dispersal)
+
+DAMAGE SYMPTOMS:
+- Direct feeding: Sap sucking causes leaf curling, yellowing, and wilting
+- Honeydew production: Sticky residue on leaves promotes sooty mold growth
+- Virus transmission: Vector for over 50 plant viruses including:
+  * Cucumber mosaic virus (CMV)
+  * Cotton leaf curl virus
+  * Watermelon mosaic virus
+  * Zucchini yellow mosaic virus
+- Yield impact: 20–50% yield reduction in severe infestations (cotton, cucurbits)
+
+CHEMICAL CONTROL:
+- Neonicotinoids:
+  * Imidacloprid (Confidor/Gaucho): Systemic, effective but harmful to bees
+  * Thiamethoxam (Actara): Foliar or soil drench application
+  * Acetamiprid: Less toxic to bees than other neonicotinoids
+- Selective aphicides:
+  * Pymetrozine (Chess/Fulfill): Disrupts feeding behavior, safe for beneficials
+  * Flonicamid (Beleaf): Systemic, low toxicity to natural enemies
+- Pyrethroids:
+  * Lambda-cyhalothrin: Broad-spectrum, use as last resort (kills beneficials)
+- Insecticidal soaps: Potassium salts of fatty acids — safe for organic farming
+- Neem oil: Azadirachtin-based — disrupts growth and feeding
+
+APPLICATION TIMING:
+- Scout fields 2x per week during critical growth stages
+- Treat when: >50 aphids per leaf OR >25% of plants infested
+- Apply early morning (before 10 AM) or late evening (after 5 PM)
+- Do NOT spray during rain, wind >15 km/h, or temperature >35°C
+- Pre-harvest interval: Check specific product label (typically 7–21 days)
+
+BIOLOGICAL CONTROL:
+- Predators:
+  * Lady beetles (Coccinellidae): Adults eat 50+ aphids/day; larvae eat 200+ in lifetime
+  * Green lacewings (Chrysoperla carnea): Larvae are voracious aphid feeders
+  * Hoverfly larvae (Syrphidae): Each larva consumes 400+ aphids
+  * Minute pirate bugs (Orius spp.): Effective in greenhouse and field
+- Parasitoids:
+  * Aphidius colemani: Lays eggs inside aphids; effective commercial biocontrol agent
+  * Lysiphlebus testaceipes: Common natural parasitoid in cotton fields
+- Microbial agents:
+  * Beauveria bassiana: Entomopathogenic fungus — sprayed as biological insecticide
+  * Lecanicillium lecanii: Effective under high humidity conditions
+
+CULTURAL CONTROL:
+- Remove and destroy heavily infested plant parts
+- Avoid excessive nitrogen fertilization (promotes soft, attractive growth)
+- Use reflective mulches (silver/aluminum) to repel winged aphids
+- Intercropping with aromatic plants (basil, marigold) may reduce colonization
+- Crop rotation with non-host plants
+- Maintain field hygiene — remove volunteer plants and weeds
+
+RESISTANCE MANAGEMENT:
+- Aphis gossypii has developed resistance to multiple insecticide classes
+- Known resistance: Organophosphates, carbamates, pyrethroids, neonicotinoids
+- Rotate chemical classes with each application (Mode of Action rotation)
+- Never apply same active ingredient more than 2 consecutive times
+- Use IPM approach to reduce selection pressure
+
+DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application. Always follow product label instructions.
+
+
+COMPREHENSIVE PEST DATASHEET — ASIATIC RICE STEM BORER (Chilo suppressalis)
+=============================================================================
+
+TAXONOMY:
+- Order: Lepidoptera
+- Family: Crambidae
+- Scientific name: Chilo suppressalis Walker
+- Common names: Asiatic rice borer, Striped rice stem borer, Striped rice borer
+
+IDENTIFICATION:
+- Adult moth: Wingspan 20–30 mm, straw-colored with dark central streak on forewing
+- Larvae: Cream to yellowish-white, up to 25 mm, with 5 brown longitudinal stripes
+- Pupae: Brown, found inside rice stems
+
+HOST PLANTS:
+- Primary: Rice (Oryza sativa)
+- Secondary: Maize, sugarcane, millet, wild grasses (Poaceae family)
+
+GEOGRAPHIC DISTRIBUTION:
+- Native to: East and Southeast Asia
+- Invasive in: Southern Europe (Spain, Italy, Portugal), North Africa
+- Major pest in: China, Japan, Korea, India, Bangladesh, Vietnam, Turkey
+
+BIOLOGY AND LIFECYCLE:
+- Generations per year: 2–4 depending on climate
+- Eggs: Laid in overlapping rows on leaf surface (50–100 eggs per mass)
+- Egg incubation: 5–10 days
+- Larval stages: 5–6 instars over 25–40 days
+- Pupation: Inside stem, lasting 7–12 days
+- Adult lifespan: 5–10 days
+- Overwinters as mature larva inside rice stubble
+
+DAMAGE SYMPTOMS:
+- Deadheart: Young larvae bore into tillers, killing the growing point → central shoot turns brown
+- Whitehead: Later infestation causes empty panicles that turn white at heading stage
+- Stem tunneling: Internal feeding weakens stems, causing lodging (plant falls over)
+- Economic threshold: Treat when >10% tillers show deadheart OR >5% whiteheads
+- Yield loss: 10–40% depending on infestation timing and severity
+
+CHEMICAL CONTROL:
+- Granular insecticides (applied to paddy water):
+  * Carbofuran 3G: Broadcast at 33 kg/ha into standing water
+  * Fipronil 0.3G: Effective but restricted in some countries due to environmental concerns
+- Foliar sprays:
+  * Chlorantraniliprole (Coragen): Low toxicity, long residual activity
+  * Flubendiamide: Effective against lepidopteran borers
+  * Cartap hydrochloride: Systemic activity
+  * Triazophos: Broad-spectrum (less preferred due to toxicity)
+- Application timing:
+  * First application: At egg hatching (7–10 days after moth flight peak)
+  * Granules: Apply before larvae bore into stems
+  * Critical window: Missing this window renders chemical control ineffective
+
+BIOLOGICAL CONTROL:
+- Egg parasitoids:
+  * Trichogramma japonicum: Release 100,000–150,000 per hectare at egg-laying period
+  * Telenomus rowani: Natural parasitoid, conserve by reducing broad-spectrum sprays
+- Larval parasitoids:
+  * Cotesia flavipes: Braconid wasp, attacks young larvae
+- Predators:
+  * Spiders (Lycosa, Tetragnatha): Major predators in rice paddies
+  * Dragonflies: Feed on adult moths
+  * Frogs: Consume larvae and pupae
+- Microbial control:
+  * Bacillus thuringiensis (Bt): Spray formulation effective on young larvae
+
+CULTURAL CONTROL:
+- Harvest at ground level (cut stubble short) to destroy overwintering larvae
+- Plow and submerge stubble after harvest to kill pupae
+- Synchronize planting dates within a region (reduces continuous food supply)
+- Use light traps to monitor and reduce adult moth populations
+- Remove and destroy egg masses by clipping leaf tips during transplanting
+- Avoid excessive nitrogen (promotes lush growth attractive to borers)
+
+INTEGRATED PEST MANAGEMENT (IPM) STRATEGY:
+1. Monitor: Use light traps and field scouting weekly
+2. Threshold: Act only when damage exceeds economic threshold (10% deadhearts)
+3. Biological first: Release Trichogramma at egg-laying period
+4. Chemical last: Use selective insecticides only when biocontrol is insufficient
+5. Post-harvest: Destroy stubble to break pest cycle
+
+DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.
+
+
+COMPREHENSIVE PEST DATASHEET — EUROPEAN CORN BORER (Ostrinia nubilalis)
+========================================================================
+
+TAXONOMY:
+- Order: Lepidoptera
+- Family: Crambidae
+- Scientific name: Ostrinia nubilalis Hübner
+- Common names: European corn borer, ECB
+
+IDENTIFICATION:
+- Adult moth: Wingspan 25–35 mm; males darker than females
+- Female: Pale yellow-brown with darker zigzag bands across wings
+- Male: Darker brown with olive tinge
+- Larvae: Flesh-colored with dark spots along body, dark head capsule, up to 25 mm
+- Eggs: Flat, overlapping clusters on underside of leaves (15–30 eggs)
+
+HOST PLANTS:
+- Primary: Corn/maize (Zea mays)
+- Secondary: Peppers, beans, potatoes, cotton, sorghum, millet
+- Also attacks: Hemp, hops, rhubarb, and many broadleaf weeds
+
+DAMAGE AND ECONOMIC IMPACT:
+- Annual losses: Estimated $1 billion+ in the US alone before Bt corn adoption
+- Stalk boring: Larvae tunnel through stalks weakening plant structure
+- Ear damage: Larvae bore into ears, creating entry points for fungal diseases
+- Yield loss: 5–30% depending on infestation severity
+- Quality loss: Fungal contamination (mycotoxins) in damaged ears
+
+CHEMICAL CONTROL:
+- Bt (Bacillus thuringiensis):
+  * Bt var. kurstaki: Spray at early larval stages (before stem boring)
+  * Must contact larvae — ineffective after they enter the stalk
+- Synthetic insecticides:
+  * Chlorantraniliprole: Excellent residual activity
+  * Bifenthrin: Pyrethroid, broad-spectrum
+  * Spinosad: Derived from soil bacterium, reduced risk to beneficials
+- Timing is critical: Spray within 7 days of egg hatch, before larvae bore into stalk
+
+BIOLOGICAL CONTROL:
+- Trichogramma ostriniae: Egg parasitoid — release 200,000 per hectare at egg-laying
+- Macrocentrus grandii: Larval parasitoid
+- Lady beetles: Feed on egg masses
+- Bt corn varieties: Transgenic corn expressing Bt toxin (most effective solution)
+
+CULTURAL CONTROL:
+- Destroy crop residues after harvest (shred and plow under stalks)
+- Rotate crops — corn after corn increases borer pressure
+- Early planting reduces exposure to second-generation borers
+- Maintain proper plant nutrition (not excessive nitrogen)
+
+DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.
+
+
+COMPREHENSIVE PEST DATASHEET — FALL ARMYWORM (Spodoptera frugiperda)
+=====================================================================
+
+TAXONOMY:
+- Order: Lepidoptera
+- Family: Noctuidae
+- Scientific name: Spodoptera frugiperda J.E. Smith
+- Common names: Fall armyworm, FAW
+
+IDENTIFICATION:
+- Larvae: Green to brown with dark stripes; inverted Y-shape on head capsule (key feature)
+- Adults: Gray-brown moth, wingspan 32–40 mm; males have distinctive wing markings
+- Eggs: Dome-shaped clusters covered with scales (100–200 eggs)
+
+DAMAGE:
+- Attacks: Maize, rice, sorghum, sugarcane, wheat, vegetables
+- Larvae feed on leaves creating ragged holes and windowpane damage
+- In corn: Burrow into whorl, destroying growing point
+- Yield loss: 20–73% in maize (Africa/Asia since 2016 invasion)
+
+CHEMICAL CONTROL:
+- Emamectin benzoate: Most effective synthetic option
+- Spinetoram / Spinosad: Reduced-risk, effective on young larvae
+- Chlorantraniliprole: Systemic, long-lasting
+- Avoid pyrethroids: FAW has widespread resistance
+- Spray in evening (larvae feed at night)
+
+BIOLOGICAL CONTROL:
+- Telenomus remus: Egg parasitoid — most promising biocontrol agent
+- Trichogramma spp.: Egg parasitoid
+- NPV (Nuclear Polyhedrosis Virus): Spodoptera-specific baculovirus
+- Cotesia icipe: Larval parasitoid (discovered in Kenya)
+
+CULTURAL CONTROL:
+- Push-pull technology: Intercrop with Desmodium (repels) and Napier grass (attracts/traps)
+- Early planting to avoid peak moth flights
+- Handpicking larvae from whorl (small-scale farmers)
+- Apply sand + lime into whorl to suffocate larvae
+
+DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.
+
+
+COMPREHENSIVE PEST DATASHEET — CITRUS LEAF MINER (Phyllocnistis citrella)
+==========================================================================
+
+TAXONOMY:
+- Order: Lepidoptera
+- Family: Gracillariidae
+- Scientific name: Phyllocnistis citrella Stainton
+- Common names: Citrus leafminer, CLM
+
+IDENTIFICATION:
+- Adult: Tiny moth (wingspan 4–5 mm), silvery white with dark wing tip spot
+- Larvae: Pale green to transparent, found inside serpentine leaf mines
+- Pupae: In rolled leaf margin
+- Mines: Silver serpentine trails visible on leaf surface (diagnostic feature)
+
+DAMAGE:
+- Larvae mine between leaf surfaces creating winding tunnels
+- Young flush growth is most susceptible
+- Severe: Leaf curling, distortion, reduced photosynthesis
+- Creates wounds that facilitate citrus canker infection
+- Yield impact: Primarily affects tree vigor rather than direct fruit loss
+- Most damaging to nursery trees and young orchards
+
+CHEMICAL CONTROL:
+- Abamectin: Effective foliar spray
+- Imidacloprid: Soil drench for systemic protection of new flush
+- Spinosad: Reduced risk, effective when applied to new growth
+- Neem oil: Deterrent and growth regulator
+- Mineral oil sprays: Suffocate larvae in mines
+
+BIOLOGICAL CONTROL:
+- Ageniaspis citricola: Introduced parasitoid — highly effective (up to 90% parasitism)
+- Cirrospilus spp.: Native parasitoid wasps
+- Semielacher petiolatus: Ectoparasitoid of larvae
+- Conserve natural enemies by minimizing broad-spectrum sprays
+
+CULTURAL CONTROL:
+- Prune to manage flush timing (synchronize growth to reduce mining period)
+- Remove water sprouts (sucker growth) which are highly susceptible
+- Avoid excessive nitrogen that promotes continuous flush growth
+- In nurseries: Use protective netting over young trees
+
+DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.
+
+
+COMPREHENSIVE PEST DATASHEET — MIGRATORY LOCUST (Locusta migratoria)
+======================================================================
+
+TAXONOMY:
+- Order: Orthoptera
+- Family: Acrididae
+- Scientific name: Locusta migratoria Linnaeus
+- Common names: Migratory locust, African migratory locust
+
+IDENTIFICATION:
+- Solitary phase: Green or brown, 40–55 mm body length
+- Gregarious phase: Yellow-brown with dark markings, longer wings
+- Nymphs (hoppers): 5 instars, change color with phase
+- Key feature: Phase polyphenism — changes behavior, color, and shape based on density
+
+DAMAGE:
+- Polyphagous: Eats virtually all green vegetation
+- Swarms can contain billions of individuals
+- A small swarm (1 km²) can consume food equivalent to 35,000 people/day
+- Complete crop destruction possible in hours
+- Affects: Cereals, pastures, vegetables, fruit trees, forests
+
+CHEMICAL CONTROL:
+- Ultra-low volume (ULV) spraying:
+  * Fenitrothion: Most commonly used organophosphate
+  * Malathion: Alternative organophosphate
+  * Deltamethrin: Pyrethroid, effective barrier treatment
+  * Lambda-cyhalothrin: Contact and residual action
+- Application method: Aerial spraying for swarms, ground spraying for hopper bands
+- Timing: Most effective against hopper bands before fledging
+
+BIOLOGICAL CONTROL:
+- Metarhizium acridum (Green Muscle): Fungal biopesticide specific to locusts
+- Advantages: No harm to non-target organisms, persists in environment
+- Disadvantages: Slower kill (7–14 days) compared to chemicals
+- Nosema locustae: Microsporidian pathogen
+
+MONITORING AND EARLY WARNING:
+- Regular field surveys of known breeding areas
+- Satellite imagery for vegetation monitoring (identifies breeding conditions)
+- Report sightings to national locust control center
+- Phase change monitoring: Crowding triggers gregarious behavior
+
+DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.
