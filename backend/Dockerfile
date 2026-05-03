@@ -51,6 +51,7 @@ COPY weather/ weather/
 COPY core/ core/
 COPY static/ static/
 COPY data/documents/ data/documents/
+COPY data/chroma_db/ data/chroma_db/
 COPY .env.example .env.example
 
 # Copy entrypoint script
@@ -58,6 +59,7 @@ COPY entrypoint.sh /app/entrypoint.sh
 
 # Create runtime directories (chroma_db will be built at first startup)
 RUN mkdir -p uploads logs data/chroma_db && \
+    sed -i 's/\r$//' /app/entrypoint.sh && \
     chmod +x /app/entrypoint.sh && \
     chown -R pestguard:pestguard /app
 

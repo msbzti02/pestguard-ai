@@ -32,8 +32,8 @@ backend/uploads/*
 backend/logs/*
 !backend/logs/.gitkeep
 
-# ChromaDB (auto-built)
-backend/data/chroma_db/
+# ChromaDB (uncomment to exclude if rebuilding at startup)
+# backend/data/chroma_db/
 
 # Node (if any)
 node_modules/
