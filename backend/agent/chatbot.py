@@ -39,8 +39,10 @@ from agent.prompts import (
     HIGH_CONFIDENCE_PROMPT,
     LOW_CONFIDENCE_PROMPT,
     FOLLOW_UP_PROMPT,
+    GENERAL_QUESTION_PROMPT,
     LEGAL_DISCLAIMER,
     format_prompt,
+    build_weather_section,
 )
 from core.logger import get_logger
 from core.retry import retry_with_backoff
@@ -300,8 +302,17 @@ class PestManagementAgent:
                 - llm_provider: Which LLM backend was used
         """
 
-        # Determine confidence status
-        is_low_confidence = confidence is not None and confidence < 0.70
+        # Determine if this is a general question (no image context)
+        is_general_question = (
+            (pest_name is None or pest_name == "Unknown") and
+            (confidence is None or confidence == 0.0)
+        )
+
+        # Determine confidence status (only when pest context exists)
+        is_low_confidence = (
+            not is_general_question and
+            confidence is not None and confidence < 0.70
+        )
 
         # ── Step 1: Retrieve relevant knowledge from RAG ──
         rag_context = ""
@@ -327,30 +338,68 @@ class PestManagementAgent:
         # ── Step 2: Select the appropriate prompt template ──
         previous = self.memory.get_last_interaction(session_id)
 
-        if is_low_confidence:
+        if is_general_question:
+            # No image uploaded — answer as a general agricultural Q&A
+            weather_block = ""
+            if weather_data:
+                weather_block = (
+                    "**CURRENT WEATHER CONDITIONS:**\n"
+                    + build_weather_section(weather_data)
+                )
+            user_prompt = GENERAL_QUESTION_PROMPT.format(
+                rag_context=rag_context if rag_context else "No relevant knowledge retrieved.",
+                weather_section_block=weather_block,
+                user_message=message,
+            )
+            prompt_type = "general_question"
+        elif is_low_confidence:
             template = LOW_CONFIDENCE_PROMPT
             prompt_type = "low_confidence"
+            user_prompt = format_prompt(
+                template=template,
+                pest_name=pest_name or "Unknown",
+                confidence=confidence or 0.0,
+                crop=crop or "Unknown",
+                category_id=category_id or -1,
+                user_message=message,
+                rag_context=rag_context,
+                vlm_description=vlm_description,
+                weather_data=weather_data,
+                previous_pest_name=previous.get("pest_name") if previous else None,
+                previous_confidence=previous.get("confidence") if previous else None,
+            )
         elif previous and previous.get("pest_name"):
             template = FOLLOW_UP_PROMPT
             prompt_type = "follow_up"
+            user_prompt = format_prompt(
+                template=template,
+                pest_name=pest_name or "Unknown",
+                confidence=confidence or 0.0,
+                crop=crop or "Unknown",
+                category_id=category_id or -1,
+                user_message=message,
+                rag_context=rag_context,
+                vlm_description=vlm_description,
+                weather_data=weather_data,
+                previous_pest_name=previous.get("pest_name") if previous else None,
+                previous_confidence=previous.get("confidence") if previous else None,
+            )
         else:
             template = HIGH_CONFIDENCE_PROMPT
             prompt_type = "high_confidence"
-
-        # ── Step 3: Build the full prompt ──
-        user_prompt = format_prompt(
-            template=template,
-            pest_name=pest_name or "Unknown",
-            confidence=confidence or 0.0,
-            crop=crop or "Unknown",
-            category_id=category_id or -1,
-            user_message=message,
-            rag_context=rag_context,
-            vlm_description=vlm_description,
-            weather_data=weather_data,
-            previous_pest_name=previous.get("pest_name") if previous else None,
-            previous_confidence=previous.get("confidence") if previous else None,
-        )
+            user_prompt = format_prompt(
+                template=template,
+                pest_name=pest_name or "Unknown",
+                confidence=confidence or 0.0,
+                crop=crop or "Unknown",
+                category_id=category_id or -1,
+                user_message=message,
+                rag_context=rag_context,
+                vlm_description=vlm_description,
+                weather_data=weather_data,
+                previous_pest_name=previous.get("pest_name") if previous else None,
+                previous_confidence=previous.get("confidence") if previous else None,
+            )
 
         # ── Step 4: Generate LLM response ──
         llm_response = self.llm.generate(SYSTEM_PROMPT, user_prompt)

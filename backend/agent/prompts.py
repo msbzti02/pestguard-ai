@@ -198,6 +198,37 @@ Summarize what we know from both uploads and provide the most helpful overall ad
 
 
 # ============================================================================
+# PROMPT 4: General Question (no image uploaded)
+# Answers agricultural / pest management questions from RAG knowledge
+# ============================================================================
+GENERAL_QUESTION_PROMPT = """The farmer is asking a general question about pest management WITHOUT uploading an image. This is a knowledge-based query — use the retrieved agricultural knowledge to provide a helpful, accurate answer.
+
+**RETRIEVED AGRICULTURAL KNOWLEDGE:**
+The following verified information was retrieved from our knowledge base:
+{rag_context}
+
+{weather_section_block}
+
+**FARMER'S QUESTION:**
+{user_message}
+
+---
+
+Please provide a helpful, structured response:
+
+## 📖 Answer
+Provide a clear, comprehensive answer to the farmer's question using ONLY information from the retrieved knowledge base above. If the knowledge base doesn't have enough information, say so honestly and provide general guidance.
+
+## 🌿 Practical Recommendations
+Give 2-3 actionable recommendations the farmer can follow.
+
+## 💡 Additional Tips
+Any relevant IPM (Integrated Pest Management) advice or safety precautions related to the question.
+
+IMPORTANT: If the question is NOT related to agriculture, pest management, or crop protection, politely redirect the farmer to ask an agriculture-related question. You are an agricultural pest management specialist — stay within your expertise."""
+
+
+# ============================================================================
 # Helper functions to build prompt sections
 # ============================================================================
 def build_vlm_section(vlm_description: str = None) -> str:

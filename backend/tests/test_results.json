@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-05-03T15:08:49.641906",
+  "timestamp": "2026-05-03T23:54:05.592583",
   "total": 60,
-  "passed": 55,
-  "failed": 5,
-  "rate": "91.7%",
+  "passed": 59,
+  "failed": 1,
+  "rate": "98.3%",
   "results": [
     {
       "id": "T01",
@@ -14,25 +14,25 @@
     {
       "id": "T02",
       "name": "Health has required fields",
-      "passed": false,
-      "detail": "['status', 'project', 'version', 'uptime_seconds', 'timestamp']"
+      "passed": true,
+      "detail": "['status', 'project', 'version', 'stage', 'vlm', 'weather', 'endpoints', 'uptime_seconds', 'timestamp']"
     },
     {
       "id": "T03",
       "name": "Running Stage 3+",
-      "passed": false,
-      "detail": null
+      "passed": true,
+      "detail": "Stage 4 + Stage 5 Robustness (VLM + Weather active)"
     },
     {
       "id": "T04",
       "name": "VLM engine active",
-      "passed": false,
+      "passed": true,
       "detail": ""
     },
     {
       "id": "T05",
       "name": "Weather uses real API",
-      "passed": false,
+      "passed": true,
       "detail": ""
     },
     {
@@ -51,13 +51,13 @@
       "id": "T08",
       "name": "Confidence in [0,1]",
       "passed": true,
-      "detail": "conf=0.98"
+      "detail": "conf=0.89"
     },
     {
       "id": "T09",
       "name": "Category ID in IP-102 range",
       "passed": true,
-      "detail": "cat=24"
+      "detail": "cat=1"
     },
     {
       "id": "T10",
@@ -74,20 +74,20 @@
     {
       "id": "T12",
       "name": "Low-confidence simulation works",
-      "passed": true,
+      "passed": false,
       "detail": ""
     },
     {
       "id": "T13",
       "name": "VLM description non-empty",
       "passed": true,
-      "detail": "len=173"
+      "detail": "len=160"
     },
     {
       "id": "T14",
       "name": "VLM output contains agri terms",
       "passed": true,
-      "detail": "A winged beetle with dark brown coloring sitting on a corn stalk. Small bore hol"
+      "detail": "A cluster of tiny aphids on the underside of a broad green leaf. Honeydew residu"
     },
     {
       "id": "T15",
@@ -110,7 +110,7 @@
     {
       "id": "T18",
       "name": "VLM multi-provider available",
-      "passed": false,
+      "passed": true,
       "detail": "Gemini \u2192 Groq failover"
     },
     {
@@ -123,7 +123,7 @@
       "id": "T20",
       "name": "Chat reply non-empty",
       "passed": true,
-      "detail": "len=741"
+      "detail": "len=2772"
     },
     {
       "id": "T21",
@@ -189,13 +189,13 @@
       "id": "T31",
       "name": "Temperature realistic (-50 to 60\u00b0C)",
       "passed": true,
-      "detail": "11.4\u00b0C"
+      "detail": "10.6\u00b0C"
     },
     {
       "id": "T32",
       "name": "Wind speed \u2265 0",
       "passed": true,
-      "detail": "28.7 km/h"
+      "detail": "24.9 km/h"
     },
     {
       "id": "T33",
@@ -339,31 +339,31 @@
       "id": "T56",
       "name": "Health latency < 3s",
       "passed": true,
-      "detail": "2334ms"
+      "detail": "2315ms"
     },
     {
       "id": "T57",
       "name": "Weather latency < 5s",
       "passed": true,
-      "detail": "2771ms"
+      "detail": "3312ms"
     },
     {
       "id": "T58",
       "name": "Chat latency < 15s",
       "passed": true,
-      "detail": "8954ms"
+      "detail": "8963ms"
     },
     {
       "id": "T59",
       "name": "Heatmap latency < 3s",
       "passed": true,
-      "detail": "2308ms"
+      "detail": "2379ms"
     },
     {
       "id": "T60",
       "name": "Frontend serves < 3s",
       "passed": true,
-      "detail": "2356ms"
+      "detail": "2346ms"
     }
   ]
 }
