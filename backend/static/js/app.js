@@ -75,14 +75,40 @@ function renderHome() {
     </div></div>`;
 }
 
+function formatUptime(sec) {
+    if (sec < 60) return sec + 's';
+    if (sec < 3600) return Math.floor(sec/60) + 'm ' + (sec%60) + 's';
+    const h = Math.floor(sec/3600), m = Math.floor((sec%3600)/60);
+    return h + 'h ' + m + 'm';
+}
+
 async function loadStatus() {
     try {
         const r = await fetch(API + '/'); const d = await r.json();
         const el = document.getElementById('sys-status');
-        if (el) el.innerHTML = `<div style="font-size:0.85rem;color:var(--text-secondary);display:grid;gap:0.4rem">
-            <div>Stage: <strong style="color:var(--accent-green)">${d.stage}</strong></div>
-            <div>VLM: <strong>${d.vlm||'N/A'}</strong> · Weather: <strong>${d.weather||'N/A'}</strong></div>
-            <div style="font-size:0.75rem;color:var(--text-muted)">v${d.version||'0.4.0'} · ${new Date().toLocaleTimeString()}</div></div>`;
+        const dp = d.display || {};
+        const components = [
+            { name: 'AI Engine', status: dp.ai_engine || (d.vlm === 'active' ? 'Operational' : 'Offline'), icon: '🧠' },
+            { name: 'Vision (VLM)', status: dp.vision || 'Offline', icon: '👁️' },
+            { name: 'Weather API', status: dp.weather_service || (d.weather === 'real' ? 'Operational' : 'Offline'), icon: '🌤️' },
+            { name: 'Knowledge Base', status: dp.knowledge_base || 'Offline', icon: '📚' },
+        ];
+        const rows = components.map(c => {
+            const ok = c.status === 'Operational';
+            return `<div style="display:flex;align-items:center;justify-content:space-between;padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+                <span style="display:flex;align-items:center;gap:0.5rem;font-size:0.85rem">${c.icon} ${c.name}</span>
+                <span style="display:flex;align-items:center;gap:0.35rem;font-size:0.8rem;font-weight:600;color:${ok?'var(--accent-green)':'var(--accent-red)'}">
+                    <span style="width:7px;height:7px;border-radius:50%;background:${ok?'var(--accent-green)':'var(--accent-red)'};display:inline-block;box-shadow:0 0 6px ${ok?'var(--accent-green)':'var(--accent-red)'}"></span>
+                    ${c.status}
+                </span>
+            </div>`;
+        }).join('');
+        const uptime = d.uptime_seconds ? formatUptime(d.uptime_seconds) : '';
+        if (el) el.innerHTML = `<div style="display:grid;gap:0.15rem">${rows}</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.6rem;padding-top:0.5rem;border-top:1px solid rgba(255,255,255,0.06)">
+                <span style="font-size:0.7rem;color:var(--text-muted)">v${d.version || '0.5.0'}</span>
+                ${uptime ? `<span style="font-size:0.7rem;color:var(--text-muted)">⏱ Uptime: ${uptime}</span>` : ''}
+            </div>`;
         document.getElementById('status-dot').className = 'status-dot online';
     } catch(e) { document.getElementById('status-dot').className = 'status-dot offline'; }
 }

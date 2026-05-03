@@ -282,7 +282,7 @@ async def root():
     return {
         "status": "online",
         "project": "Insect Pest Recognition System — Department 2",
-        "version": "0.5.0 (Stage 5 — Robustness)",
+        "version": "0.5.0",
         # ── Backward-compatible fields (tests T02–T05, T18 depend on these) ──
         "stage": stage,
         "vlm": "active" if _vlm_ready else "unavailable",
@@ -295,6 +295,13 @@ async def root():
             "heatmap_report": "POST /heatmap/report",
             "frontend":       "GET  /app",
             "health":         "GET  /health",
+        },
+        # ── User-friendly display fields ──
+        "display": {
+            "ai_engine": "Operational" if _agent_ready else "Limited",
+            "vision": "Operational" if _vlm_ready else "Offline",
+            "weather_service": "Operational" if _weather_ready else "Offline",
+            "knowledge_base": "Operational" if _agent_ready else "Offline",
         },
         # ── New Stage 5 fields ────────────────────────────────────────────────
         "uptime_seconds": uptime_sec,

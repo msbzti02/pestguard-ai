@@ -9,13 +9,29 @@ function nav(p){curPage=p;document.querySelectorAll('.page-section').forEach(s=>
 document.querySelectorAll('[data-page]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();nav(a.dataset.page);}));
 
 // Status
-async function loadStatus(){try{const r=await fetch('/');const d=await r.json();document.getElementById('sys-status').innerHTML=`
-  <div class="d-flex flex-column gap-2 small">
-    <div><i class="ti ti-circle-filled text-success me-1" style="font-size:8px"></i>Stage: <strong class="text-success">${d.stage}</strong></div>
-    <div><i class="ti ti-circle-filled text-info me-1" style="font-size:8px"></i>VLM: <strong>${d.vlm||'N/A'}</strong></div>
-    <div><i class="ti ti-circle-filled text-primary me-1" style="font-size:8px"></i>Weather: <strong>${d.weather||'N/A'}</strong></div>
-    <div class="text-secondary mt-1" style="font-size:0.75rem">v${d.version||'0.4.0'} · ${new Date().toLocaleTimeString()}</div>
-  </div>`;}catch(e){document.getElementById('sys-status').innerHTML='<span class="text-danger">Offline</span>';}}
+async function loadStatus(){try{const r=await fetch('/');const d=await r.json();const dp=d.display||{};
+  const comps=[
+    {name:'AI Engine',status:dp.ai_engine||(d.vlm==='active'?'Operational':'Offline'),icon:'ti-brain'},
+    {name:'Vision (VLM)',status:dp.vision||'Offline',icon:'ti-eye'},
+    {name:'Weather API',status:dp.weather_service||(d.weather==='real'?'Operational':'Offline'),icon:'ti-cloud'},
+    {name:'Knowledge Base',status:dp.knowledge_base||'Offline',icon:'ti-database'},
+  ];
+  function fmtUp(s){if(!s)return'';if(s<60)return s+'s';if(s<3600)return Math.floor(s/60)+'m';const h=Math.floor(s/3600),m=Math.floor((s%3600)/60);return h+'h '+m+'m';}
+  const rows=comps.map(c=>{const ok=c.status==='Operational';return`
+    <div class="d-flex align-items-center justify-content-between py-1" style="border-bottom:1px solid rgba(255,255,255,0.05)">
+      <span class="d-flex align-items-center gap-2" style="font-size:0.82rem"><i class="ti ${c.icon}" style="font-size:14px;opacity:0.7"></i>${c.name}</span>
+      <span class="d-flex align-items-center gap-1" style="font-size:0.78rem;font-weight:600;color:${ok?'#10b981':'#ef4444'}">
+        <span style="width:7px;height:7px;border-radius:50%;background:${ok?'#10b981':'#ef4444'};display:inline-block;box-shadow:0 0 6px ${ok?'#10b981':'#ef4444'}"></span>
+        ${c.status}
+      </span>
+    </div>`;}).join('');
+  const up=fmtUp(d.uptime_seconds);
+  document.getElementById('sys-status').innerHTML=`
+    <div>${rows}</div>
+    <div class="d-flex justify-content-between align-items-center mt-2 pt-2" style="border-top:1px solid rgba(255,255,255,0.06)">
+      <span class="text-secondary" style="font-size:0.7rem">v${d.version||'0.5.0'}</span>
+      ${up?`<span class="text-secondary" style="font-size:0.7rem">⏱ ${up}</span>`:''}
+    </div>`;}catch(e){document.getElementById('sys-status').innerHTML='<span class="text-danger">Offline</span>';}}
 
 // Charts
 function initCharts(){
