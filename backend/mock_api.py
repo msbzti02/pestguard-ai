@@ -67,13 +67,25 @@ def get_prediction(image_path: str = None, simulate_low_confidence: bool = False
 
     # Pick a random pest from our database for realistic variety
     pest = random.choice(MOCK_PEST_DATABASE)
+    conf = round(random.uniform(0.72, 0.98), 2)
+
+    # Generate top-3 predictions (like a real ML model)
+    others = [p for p in MOCK_PEST_DATABASE if p["category_id"] != pest["category_id"]]
+    random.shuffle(others)
+    top_3 = [
+        {"pest_name": pest["pest_name"], "confidence": conf, "crop": pest["crop"]},
+        {"pest_name": others[0]["pest_name"], "confidence": round(conf * random.uniform(0.3, 0.6), 2), "crop": others[0]["crop"]},
+        {"pest_name": others[1]["pest_name"], "confidence": round(conf * random.uniform(0.1, 0.3), 2), "crop": others[1]["crop"]},
+    ]
+
     return {
         "pest_name": pest["pest_name"],
-        "confidence": round(random.uniform(0.72, 0.98), 2),
+        "confidence": conf,
         "category_id": pest["category_id"],
         "crop": pest["crop"],
         "timestamp": datetime.now().isoformat(),
-        "is_mock": True
+        "is_mock": True,
+        "top_3": top_3,
     }
 
 

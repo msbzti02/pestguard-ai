@@ -35,9 +35,29 @@
     .upload-zone:hover{border-color:var(--bs-primary);background:rgba(16,185,129,0.05)}
     .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer}
     .chat-messages{height:420px;overflow-y:auto}
-    .chat-bubble{max-width:80%;padding:.75rem 1rem;border-radius:1rem;margin-bottom:.5rem;font-size:.9rem;line-height:1.6}
+    .chat-bubble{max-width:80%;padding:.75rem 1rem;border-radius:1rem;margin-bottom:.5rem;font-size:.9rem;line-height:1.6;position:relative}
     .chat-bubble.user{background:var(--bs-primary);color:#fff;margin-left:auto;border-bottom-right-radius:4px}
     .chat-bubble.assistant{background:var(--bs-gray-800);border:1px solid var(--bs-border-color);border-bottom-left-radius:4px}
+    .chat-bubble.assistant h1,.chat-bubble.assistant h2,.chat-bubble.assistant h3,.chat-bubble.assistant h4,.chat-bubble.assistant h5,.chat-bubble.assistant h6{font-size:.95rem;font-weight:700;margin:0.8rem 0 0.3rem;color:var(--bs-heading-color)}
+    .chat-bubble.assistant ul,.chat-bubble.assistant ol{padding-left:1.2rem;margin:.3rem 0}
+    .chat-bubble.assistant li{margin:.2rem 0}
+    .chat-bubble.assistant p{margin:.3rem 0}
+    .chat-bubble.assistant code{background:rgba(255,255,255,0.08);padding:0.1rem 0.3rem;border-radius:3px;font-size:0.82rem}
+    .chat-bubble.assistant blockquote{border-left:3px solid var(--bs-primary);padding-left:0.75rem;margin:.5rem 0;opacity:0.85}
+    .chat-actions{display:flex;gap:0.3rem;margin-top:0.5rem;flex-wrap:wrap}
+    .chat-actions button{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:0.35rem;padding:0.2rem 0.5rem;font-size:0.7rem;color:var(--bs-secondary-color);cursor:pointer;transition:all .2s}
+    .chat-actions button:hover{background:rgba(255,255,255,0.12);color:var(--bs-body-color)}
+    .chat-suggest{display:flex;gap:0.5rem;flex-wrap:wrap;padding:0.5rem 0}
+    .chat-suggest button{background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:2rem;padding:0.35rem 0.85rem;font-size:0.78rem;color:#10b981;cursor:pointer;transition:all .2s;white-space:nowrap}
+    .chat-suggest button:hover{background:rgba(16,185,129,0.18);transform:translateY(-1px)}
+    .quality-badge{display:inline-block;padding:0.1rem 0.4rem;border-radius:3px;font-size:0.65rem;font-weight:600}
+    .quality-high{background:rgba(16,185,129,0.15);color:#10b981}
+    .quality-medium{background:rgba(245,158,11,0.15);color:#f59e0b}
+    .quality-low{background:rgba(239,68,68,0.15);color:#ef4444}
+    .quality-none{background:rgba(148,163,184,0.15);color:#94a3b8}
+    .voice-btn{width:38px;height:38px;border-radius:50%;border:2px solid rgba(255,255,255,0.15);background:transparent;color:var(--bs-secondary-color);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}
+    .voice-btn:hover,.voice-btn.recording{border-color:#ef4444;color:#ef4444;background:rgba(239,68,68,0.1)}
+    .voice-btn.recording{animation:pulseR 1.5s infinite}
     .typing-dots{display:flex;gap:4px;padding:.75rem 1rem}
     .typing-dots span{width:8px;height:8px;border-radius:50%;background:var(--bs-primary);animation:tbounce 1.4s infinite}
     .typing-dots span:nth-child(2){animation-delay:.2s}.typing-dots span:nth-child(3){animation-delay:.4s}
@@ -110,6 +130,25 @@
     </li>
     <!-- Section -->
     <li class="nav-item">
+      <div class="nav-heading">Tools</div>
+      <hr class="mx-5 nav-line mb-1">
+    </li>
+    <!-- Analytics -->
+    <li class="nav-item">
+      <a class="nav-link" href="#" onclick="nav('analytics');return false">
+        <span class="nav-icon"><i class="ti ti-chart-dots-3 fs-5"></i></span>
+        <span class="text" data-i18n="Analytics">Analytics</span>
+      </a>
+    </li>
+    <!-- Compare -->
+    <li class="nav-item">
+      <a class="nav-link" href="#" onclick="nav('compare');return false">
+        <span class="nav-icon"><i class="ti ti-arrows-diff fs-5"></i></span>
+        <span class="text" data-i18n="Compare">Compare</span>
+      </a>
+    </li>
+    <!-- Section -->
+    <li class="nav-item">
       <div class="nav-heading">System</div>
       <hr class="mx-5 nav-line mb-1">
     </li>
@@ -135,6 +174,35 @@
       </div>
     </li>
   </ul>
+</div>
+
+<!-- Offline Banner -->
+<div id="offline-banner" style="display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;text-align:center;padding:10px;font-weight:600;font-size:14px;box-shadow:0 2px 10px rgba(0,0,0,0.3)"><i class="ti ti-wifi-off me-2"></i>You are offline — Some features may not work. <button onclick="location.reload()" class="btn btn-sm btn-light ms-2">Retry</button></div>
+
+<!-- Keyboard Shortcuts Modal -->
+<div class="modal fade" id="shortcutsModal" tabindex="-1"><div class="modal-dialog"><div class="modal-content"><div class="modal-header border-bottom-0"><h5 class="modal-title"><i class="ti ti-keyboard me-2"></i>Keyboard Shortcuts</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body">
+  <table class="table table-sm small mb-0">
+    <tr><td><kbd>Ctrl</kbd>+<kbd>1</kbd></td><td>Dashboard</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>2</kbd></td><td>Prediction</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>3</kbd></td><td>AI Advisor</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>4</kbd></td><td>Weather</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>5</kbd></td><td>Heatmap</td></tr>
+    <tr><td><kbd>Enter</kbd></td><td>Send chat message</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>E</kbd></td><td>Export chat</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>D</kbd></td><td>Download PDF report</td></tr>
+    <tr><td><kbd>?</kbd></td><td>Show this help</td></tr>
+  </table>
+</div></div></div></div>
+
+<!-- Onboarding Tour Overlay -->
+<div id="tour-overlay" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.7);backdrop-filter:blur(4px)">
+  <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);max-width:480px;width:90%;background:var(--bs-body-bg);border-radius:16px;padding:32px;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.1)">
+    <div id="tour-content" class="text-center"></div>
+    <div class="d-flex justify-content-between mt-4">
+      <button class="btn btn-outline-secondary btn-sm" onclick="skipTour()">Skip Tour</button>
+      <div><span id="tour-dots" class="me-3"></span><button class="btn btn-primary btn-sm" id="tour-next" onclick="nextTourStep()">Next →</button></div>
+    </div>
+  </div>
 </div>
 
 <!-- ═══ MAIN CONTENT ═══ -->
@@ -167,12 +235,15 @@
       <!-- Hero -->
       <div class="row mb-6 g-6">
         <div class="col-xl-8 col-lg-6">
-          <div class="bg-gradient-mixed p-8 py-10 rounded-3">
-            <h1 class="fs-3 text-white">🌾 PestGuard AI Dashboard</h1>
-            <p class="mb-0 text-white-50">Deep Learning-Based Insect Pest Recognition System</p>
-            <p class="text-white-50">Real-time predictions, RAG-powered advice, and weather-aware spray safety.</p>
-            <a href="#" class="btn btn-dark" onclick="nav('predict');return false"><i class="ti ti-camera me-1"></i>Start Prediction</a>
-            <a href="#" class="btn btn-outline-light ms-2" onclick="nav('chat');return false"><i class="ti ti-message-dots me-1"></i>Ask Advisor</a>
+          <div class="bg-gradient-mixed p-8 py-10 rounded-3" style="position:relative;overflow:hidden">
+            <canvas id="particle-canvas" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0"></canvas>
+            <div style="position:relative;z-index:1">
+              <h1 class="fs-3 text-white" id="hero-title">🌾 <span id="typewriter-text"></span><span class="typewriter-cursor">|</span></h1>
+              <p class="mb-0 text-white-50">Deep Learning-Based Insect Pest Recognition System</p>
+              <p class="text-white-50">Real-time predictions, RAG-powered advice, and weather-aware spray safety.</p>
+              <a href="#" class="btn btn-dark" onclick="nav('predict');return false"><i class="ti ti-camera me-1"></i>Start Prediction</a>
+              <a href="#" class="btn btn-outline-light ms-2" onclick="nav('chat');return false"><i class="ti ti-message-dots me-1"></i>Ask Advisor</a>
+            </div>
           </div>
         </div>
         <div class="col-xl-4 col-lg-6">
@@ -188,19 +259,34 @@
       <div class="row row-cols-1 row-cols-xl-4 row-cols-md-2 mb-6 g-6">
         <div class="col"><div class="card card-lg"><div class="card-body d-flex flex-column gap-3">
           <div class="d-flex align-items-center gap-3"><div class="icon-shape icon-lg rounded-circle bg-success-darker text-success-lighter"><i class="ti ti-database fs-4"></i></div><div>Knowledge Base</div></div>
-          <div class="d-flex justify-content-between align-items-center lh-1"><div class="fs-3 fw-bold">4,766</div><span class="text-success small">chunks</span></div>
+          <div class="d-flex justify-content-between align-items-center lh-1"><div class="fs-3 fw-bold" data-counter="4766">0</div><span class="text-success small">chunks</span></div>
         </div></div></div>
         <div class="col"><div class="card card-lg"><div class="card-body d-flex flex-column gap-3">
           <div class="d-flex align-items-center gap-3"><div class="icon-shape icon-lg rounded-circle bg-info-darker text-info-lighter"><i class="ti ti-file-text fs-4"></i></div><div>Source Documents</div></div>
-          <div class="d-flex justify-content-between align-items-center lh-1"><div class="fs-3 fw-bold">20</div><span class="text-info small">PDFs</span></div>
+          <div class="d-flex justify-content-between align-items-center lh-1"><div class="fs-3 fw-bold" data-counter="20">0</div><span class="text-info small">PDFs</span></div>
         </div></div></div>
         <div class="col"><div class="card card-lg"><div class="card-body d-flex flex-column gap-3">
           <div class="d-flex align-items-center gap-3"><div class="icon-shape icon-lg rounded-circle bg-warning-darker text-warning-lighter"><i class="ti ti-brain fs-4"></i></div><div>AI Providers</div></div>
-          <div class="d-flex justify-content-between align-items-center lh-1"><div class="fs-3 fw-bold">3</div><span class="text-warning small">failover</span></div>
+          <div class="d-flex justify-content-between align-items-center lh-1"><div class="fs-3 fw-bold" data-counter="6">0</div><span class="text-warning small">failover</span></div>
         </div></div></div>
         <div class="col"><div class="card card-lg"><div class="card-body d-flex flex-column gap-3">
           <div class="d-flex align-items-center gap-3"><div class="icon-shape icon-lg rounded-circle bg-danger-darker text-danger-lighter"><i class="ti ti-bug fs-4"></i></div><div>Pest Species</div></div>
-          <div class="d-flex justify-content-between align-items-center lh-1"><div class="fs-3 fw-bold">102</div><span class="text-danger small">IP-102</span></div>
+          <div class="d-flex justify-content-between align-items-center lh-1"><div class="fs-3 fw-bold" data-counter="102">0</div><span class="text-danger small">IP-102</span></div>
+        </div></div></div>
+      </div>
+      <!-- Provider Status Grid + Session Stats -->
+      <div class="row g-6 mb-6">
+        <div class="col-xl-6"><div class="card card-lg"><div class="card-body">
+          <h5 class="mb-3"><i class="ti ti-server me-2"></i>LLM Provider Status</h5>
+          <div id="provider-grid" class="row row-cols-2 row-cols-md-3 g-2"></div>
+        </div></div></div>
+        <div class="col-xl-3"><div class="card card-lg"><div class="card-body">
+          <h5 class="mb-3"><i class="ti ti-chart-line me-2"></i>Session Stats</h5>
+          <div id="session-stats" class="small"></div>
+        </div></div></div>
+        <div class="col-xl-3"><div class="card card-lg"><div class="card-body">
+          <h5 class="mb-3"><i class="ti ti-activity me-2"></i>Live Activity</h5>
+          <div id="activity-feed" class="small" style="max-height:180px;overflow-y:auto"></div>
         </div></div></div>
       </div>
       <!-- Charts -->
@@ -237,31 +323,76 @@
           <p class="mb-1"><strong>Click or drag</strong> a pest image here</p>
           <small class="text-secondary">JPEG, PNG, WebP · Max 10MB</small>
         </div>
+        <div class="d-flex gap-2 mt-3 justify-content-center">
+          <button class="btn btn-outline-primary btn-sm" onclick="openCamera()"><i class="ti ti-camera me-1"></i>Take Photo</button>
+        </div>
+        <div id="camera-area" style="display:none" class="mt-3">
+          <video id="camera-video" class="rounded border w-100" style="max-height:300px" autoplay playsinline></video>
+          <div class="d-flex gap-2 mt-2 justify-content-center">
+            <button class="btn btn-success btn-sm" onclick="capturePhoto()"><i class="ti ti-camera me-1"></i>Capture</button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="closeCamera()"><i class="ti ti-x me-1"></i>Close</button>
+          </div>
+          <canvas id="camera-canvas" style="display:none"></canvas>
+        </div>
         <div id="preview-area" style="display:none" class="mt-4">
           <img id="preview-img" class="rounded border w-100" style="max-height:350px;object-fit:contain" alt="Pest Preview">
           <div class="d-flex gap-2 mt-3 flex-wrap align-items-center">
             <button class="btn btn-primary" id="pred-btn" onclick="submitPrediction()"><i class="ti ti-search me-1"></i>Analyze Pest</button>
             <button class="btn btn-outline-secondary" onclick="resetUpload()"><i class="ti ti-x me-1"></i>Clear</button>
+            <button class="btn btn-outline-info btn-sm" id="share-btn" style="display:none" onclick="shareResult()"><i class="ti ti-share me-1"></i>Share</button>
             <div class="form-check ms-3"><input type="checkbox" class="form-check-input" id="sim-low"><label class="form-check-label small text-secondary" for="sim-low">Simulate low confidence</label></div>
           </div>
         </div>
       </div></div>
       <div id="pred-result"></div>
+      <div id="pest-info-card" style="display:none"></div>
+      <!-- Prediction History -->
+      <div class="card card-lg mt-3" id="pred-history-card" style="display:none">
+        <div class="card-body">
+          <h6><i class="ti ti-history me-2"></i>Prediction History</h6>
+          <div id="pred-history" class="row row-cols-2 row-cols-md-4 g-2"></div>
+        </div>
+      </div>
     </div>
 
     <!-- ═══ CHAT PAGE ═══ -->
     <div class="page-section" id="page-chat">
-      <h4 class="mb-4"><i class="ti ti-message-dots me-2"></i>AI Agricultural Advisor</h4>
+      <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+        <h4 class="mb-0"><i class="ti ti-message-dots me-2"></i>AI Agricultural Advisor</h4>
+        <div class="d-flex align-items-center gap-2">
+          <select class="form-select form-select-sm" id="chat-lang" style="width:auto" title="Response language">
+            <option value="English">🇬🇧 English</option>
+            <option value="Turkish">🇹🇷 Türkçe</option>
+            <option value="Arabic">🇸🇦 العربية</option>
+            <option value="French">🇫🇷 Français</option>
+            <option value="Spanish">🇪🇸 Español</option>
+            <option value="German">🇩🇪 Deutsch</option>
+          </select>
+          <button class="btn btn-outline-secondary btn-sm" onclick="exportChat()" title="Export chat"><i class="ti ti-download me-1"></i>Export</button>
+        </div>
+      </div>
       <div id="chat-ctx"></div>
       <div class="card card-lg">
         <div class="card-body p-0">
           <div class="chat-messages p-4 d-flex flex-column" id="chat-msgs">
-            <div class="text-center text-secondary py-5"><div class="fs-1 mb-2">🌾</div>Ask about pest management, treatment timing, or safety precautions...</div>
+            <div class="text-center text-secondary py-4">
+              <div class="fs-1 mb-2">🌾</div>
+              <div class="mb-3">Ask about pest management, treatment timing, or safety precautions...</div>
+              <div class="chat-suggest" id="chat-suggestions"></div>
+            </div>
           </div>
-          <div class="border-top p-3 d-flex gap-2">
+          <div id="chat-suggest-bar" class="px-3 pb-1"></div>
+          <div class="border-top p-3 d-flex gap-2 align-items-center">
+            <button class="voice-btn" id="voice-btn" onclick="toggleVoice()" title="Voice input"><i class="ti ti-microphone fs-5"></i></button>
             <input type="text" class="form-control" id="chat-input" placeholder="How do I treat fall armyworm on corn?" onkeydown="if(event.key==='Enter')sendChat()">
             <button class="btn btn-primary px-4" id="chat-btn" onclick="sendChat()"><i class="ti ti-send me-1"></i>Send</button>
           </div>
+        </div>
+      </div>
+      <div class="card card-lg mt-3" id="chat-analytics-card" style="display:none">
+        <div class="card-body">
+          <h6><i class="ti ti-chart-bar me-2"></i>Chat Analytics</h6>
+          <div id="chat-analytics-body"></div>
         </div>
       </div>
     </div>
@@ -275,14 +406,36 @@
           <div class="col-auto"><label class="form-label small">Longitude</label><input type="number" step="0.01" class="form-control" id="w-lon" value="29.0" style="width:130px"></div>
           <div class="col-auto"><button class="btn btn-primary" id="w-btn" onclick="fetchWeather()"><i class="ti ti-search me-1"></i>Check</button></div>
           <div class="col-auto"><button class="btn btn-outline-secondary" onclick="useMyLoc()"><i class="ti ti-current-location me-1"></i>My Location</button></div>
+          <div class="col-auto"><button class="btn btn-outline-info btn-sm" onclick="saveLocation()"><i class="ti ti-bookmark me-1"></i>Save</button></div>
+          <div class="col-auto" id="saved-locations"></div>
+          <div class="col-auto"><small class="text-secondary" id="weather-countdown"></small></div>
         </div>
       </div></div>
       <div id="weather-result"></div>
+      <div class="card card-lg mt-3" id="forecast-card" style="display:none">
+        <div class="card-body">
+          <h6><i class="ti ti-calendar me-2"></i>5-Day Forecast & Best Spray Window</h6>
+          <div id="forecast-body"></div>
+          <div id="forecast-chart" class="mt-3"></div>
+        </div>
+      </div>
     </div>
 
     <!-- ═══ HEATMAP PAGE ═══ -->
     <div class="page-section" id="page-heatmap">
-      <h4 class="mb-4"><i class="ti ti-map-pin me-2"></i>Regional Pest Outbreak Map</h4>
+      <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+        <h4 class="mb-0"><i class="ti ti-map-pin me-2"></i>Regional Pest Outbreak Map</h4>
+        <div class="d-flex gap-2">
+          <select class="form-select form-select-sm" id="heatmap-filter" style="width:auto" onchange="loadHeatmap()">
+            <option value="all">All Time</option>
+            <option value="7">Last 7 Days</option>
+            <option value="30">Last 30 Days</option>
+            <option value="90">Last 90 Days</option>
+          </select>
+        </div>
+      </div>
+      <!-- Stats Panel -->
+      <div id="heatmap-stats" class="row row-cols-2 row-cols-md-4 g-2 mb-3"></div>
       <div class="card card-lg mb-4"><div class="card-body p-0"><div id="heatmap-box"></div></div></div>
       <div class="card card-lg"><div class="card-body">
         <h5 class="mb-3"><i class="ti ti-map-pin-plus me-2"></i>Report a Sighting</h5>
@@ -295,6 +448,67 @@
         <div id="report-msg" class="mt-2 small"></div>
         <div class="disclaimer-box mt-3"><i class="ti ti-lock me-1"></i>Privacy: Coordinates rounded to 0.1° (~11km grid). No personal data stored.</div>
       </div></div>
+    </div>
+
+    <!-- ═══ ANALYTICS PAGE ═══ -->
+    <div class="page-section" id="page-analytics">
+      <h4 class="mb-4"><i class="ti ti-chart-dots-3 me-2"></i><span data-i18n="Live System Analytics">Live System Analytics</span></h4>
+      <!-- Metrics Row -->
+      <div class="row row-cols-2 row-cols-md-4 g-3 mb-4" id="analytics-metrics"></div>
+      <!-- Charts Row -->
+      <div class="row g-4 mb-4">
+        <div class="col-md-8"><div class="card card-lg"><div class="card-body">
+          <h6><i class="ti ti-chart-line me-1"></i>Response Time (ms)</h6>
+          <div id="chart-response-time" style="height:250px"></div>
+        </div></div></div>
+        <div class="col-md-4"><div class="card card-lg"><div class="card-body">
+          <h6><i class="ti ti-chart-pie me-1"></i>Provider Usage</h6>
+          <div id="chart-provider-pie" style="height:250px"></div>
+        </div></div></div>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-6"><div class="card card-lg"><div class="card-body">
+          <h6><i class="ti ti-activity me-1"></i>Endpoint Traffic</h6>
+          <div id="chart-endpoint-bar" style="height:220px"></div>
+        </div></div></div>
+        <div class="col-md-6"><div class="card card-lg"><div class="card-body">
+          <h6><i class="ti ti-clock-hour-4 me-1"></i>System Log</h6>
+          <div id="analytics-log" style="max-height:220px;overflow-y:auto;font-family:monospace;font-size:12px"></div>
+        </div></div></div>
+      </div>
+    </div>
+
+    <!-- ═══ COMPARE PAGE ═══ -->
+    <div class="page-section" id="page-compare">
+      <h4 class="mb-4"><i class="ti ti-arrows-diff me-2"></i><span data-i18n="Side-by-Side Comparison">Side-by-Side Comparison</span></h4>
+      <div class="row g-4">
+        <div class="col-md-6">
+          <div class="card card-lg"><div class="card-body text-center">
+            <h6 class="mb-3">Image A</h6>
+            <div id="cmp-zone-a" class="upload-zone p-4 mb-3" style="border:2px dashed rgba(255,255,255,0.15);border-radius:12px;cursor:pointer" onclick="document.getElementById('cmp-file-a').click()">
+              <i class="ti ti-photo-plus fs-1 text-secondary"></i><br><small class="text-secondary">Click to upload</small>
+            </div>
+            <input type="file" id="cmp-file-a" accept="image/*" style="display:none" onchange="cmpPreview('a',this)">
+            <img id="cmp-img-a" style="display:none;max-height:200px;border-radius:8px" class="mb-2">
+            <div id="cmp-result-a"></div>
+          </div></div>
+        </div>
+        <div class="col-md-6">
+          <div class="card card-lg"><div class="card-body text-center">
+            <h6 class="mb-3">Image B</h6>
+            <div id="cmp-zone-b" class="upload-zone p-4 mb-3" style="border:2px dashed rgba(255,255,255,0.15);border-radius:12px;cursor:pointer" onclick="document.getElementById('cmp-file-b').click()">
+              <i class="ti ti-photo-plus fs-1 text-secondary"></i><br><small class="text-secondary">Click to upload</small>
+            </div>
+            <input type="file" id="cmp-file-b" accept="image/*" style="display:none" onchange="cmpPreview('b',this)">
+            <img id="cmp-img-b" style="display:none;max-height:200px;border-radius:8px" class="mb-2">
+            <div id="cmp-result-b"></div>
+          </div></div>
+        </div>
+      </div>
+      <div class="text-center mt-4">
+        <button class="btn btn-primary btn-lg" id="cmp-btn" onclick="runComparison()" disabled><i class="ti ti-arrows-diff me-2"></i>Compare Both</button>
+      </div>
+      <div id="cmp-comparison" class="mt-4"></div>
     </div>
 
   </div>
@@ -311,6 +525,10 @@
 <script src="/static/js/main.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="/static/js/dashboard.js?v=2"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="/static/js/dashboard.js?v=5"></script>
+<!-- Print CSS -->
+<style>@media print{#miniSidebar,.border-top,.border-bottom,#toasts,#offline-banner,button,.btn,.nav-link,.form-control,.form-select,.form-check{display:none!important}#content{margin:0!important;padding:0!important}.page-section{display:block!important}.card{break-inside:avoid;border:1px solid #ddd!important;box-shadow:none!important}body{background:#fff!important;color:#000!important}.text-secondary{color:#666!important}h1,h2,h3,h4,h5,h6{color:#000!important}}</style>
 </body>
 </html>

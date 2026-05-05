@@ -129,7 +129,9 @@ class WeatherService:
                 "longitude": lon,
                 "current_weather": "true",
                 "hourly": "relativehumidity_2m,precipitation_probability",
-                "forecast_days": 1,
+                "daily": "temperature_2m_max,temperature_2m_min,precipitation_probability_max,windspeed_10m_max,weathercode",
+                "forecast_days": 5,
+                "timezone": "auto",
             },
             timeout=10,
         )
@@ -190,7 +192,38 @@ class WeatherService:
             "timestamp": datetime.now().isoformat(),
             "is_mock": False,
             "disclaimer": WEATHER_DISCLAIMER,
+            "forecast": self._build_forecast(data),
         }
+
+    def _build_forecast(self, data: dict) -> list:
+        """Build 5-day forecast with spray safety per day."""
+        daily = data.get("daily", {})
+        dates = daily.get("time", [])
+        t_max = daily.get("temperature_2m_max", [])
+        t_min = daily.get("temperature_2m_min", [])
+        rain = daily.get("precipitation_probability_max", [])
+        wind = daily.get("windspeed_10m_max", [])
+        codes = daily.get("weathercode", [])
+
+        forecast = []
+        for i in range(min(5, len(dates))):
+            avg_temp = round((t_max[i] + t_min[i]) / 2, 1) if i < len(t_max) and i < len(t_min) else 20
+            r = rain[i] if i < len(rain) else 0
+            w = wind[i] if i < len(wind) else 0
+            code = codes[i] if i < len(codes) else 0
+            cond = WMO_CODES.get(code, f"Code {code}")
+
+            safe = (w <= 15 and r <= 60 and 5 <= avg_temp <= 35 and code not in UNSAFE_CODES)
+            forecast.append({
+                "date": dates[i] if i < len(dates) else "",
+                "temp_max": round(t_max[i], 1) if i < len(t_max) else 0,
+                "temp_min": round(t_min[i], 1) if i < len(t_min) else 0,
+                "rain_probability": r,
+                "wind_max": round(w, 1),
+                "condition": cond,
+                "safe_to_spray": safe,
+            })
+        return forecast
 
     def _fetch_mgm_alerts(self, lat: float, lon: float) -> list:
         """
