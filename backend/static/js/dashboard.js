@@ -115,7 +115,7 @@ async function submitPrediction(){if(!window._file)return;const b=document.getEl
   b.disabled=false;b.innerHTML='<i class="ti ti-search me-1"></i>Analyze';}
 
 // Chat — Enhanced with all 20 features
-let _lastSuggestions = ['🐛 How to identify common crop pests?','🌿 What is Integrated Pest Management?','🌧️ Is it safe to spray in rainy weather?','⏰ Best time to apply pesticides?','🧪 Organic alternatives for pest control?'];
+let _lastSuggestions = ['🌿 What is Integrated Pest Management according to FAO guidelines?','🐛 How do I treat Fall Armyworm on corn crops?','🌧️ Is it safe to spray pesticides in rainy weather and what precautions should I take?'];
 let _voiceRecognition = null;
 let _chatStartTime = 0;
 
