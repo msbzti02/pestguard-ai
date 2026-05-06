@@ -27,11 +27,7 @@ async function loadStatus(){try{const r=await fetch('/');const d=await r.json();
     </div>`;}).join('');
   const up=fmtUp(d.uptime_seconds);
   document.getElementById('sys-status').innerHTML=`
-    <div>${rows}</div>
-    <div class="d-flex justify-content-between align-items-center mt-2 pt-2" style="border-top:1px solid rgba(255,255,255,0.06)">
-      <span class="text-secondary" style="font-size:0.7rem">v${d.version||'0.5.0'}</span>
-      ${up?`<span class="text-secondary" style="font-size:0.7rem">⏱ ${up}</span>`:''}
-    </div>`;}catch(e){document.getElementById('sys-status').innerHTML='<span class="text-danger">Offline</span>';}}
+    <div>${rows}</div>`;}catch(e){document.getElementById('sys-status').innerHTML='<span class="text-danger">Offline</span>';}}
 
 // Charts
 function initCharts(){
