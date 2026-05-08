@@ -144,7 +144,14 @@
     <li class="nav-item">
       <a class="nav-link" href="#" onclick="nav('compare');return false">
         <span class="nav-icon"><i class="ti ti-arrows-diff fs-5"></i></span>
-        <span class="text" data-i18n="Compare">Compare</span>
+        <span class="text">Compare</span>
+      </a>
+    </li>
+    <!-- Pest Library -->
+    <li class="nav-item">
+      <a class="nav-link" href="#" data-page="library" onclick="nav('library');return false">
+        <span class="nav-icon"><i class="ti ti-book fs-5"></i></span>
+        <span class="text">Pest Library</span>
       </a>
     </li>
     <!-- Section -->
@@ -399,6 +406,12 @@
         </div>
       </div></div>
       <div id="weather-result"></div>
+      <div class="card card-lg mt-3" id="spray-calendar-card" style="display:none">
+        <div class="card-body">
+          <h6><i class="ti ti-calendar-event me-2"></i>7-Day Spray Calendar</h6>
+          <div id="spray-calendar" class="d-flex gap-2 flex-wrap mt-3"></div>
+        </div>
+      </div>
       <div class="card card-lg mt-3" id="forecast-card" style="display:none">
         <div class="card-body">
           <h6><i class="ti ti-calendar me-2"></i>5-Day Forecast & Best Spray Window</h6>
@@ -498,6 +511,33 @@
       <div id="cmp-comparison" class="mt-4"></div>
     </div>
 
+    <!-- ═══ PEST LIBRARY PAGE ═══ -->
+    <div class="page-section" id="page-library">
+      <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+        <h4 class="mb-0"><i class="ti ti-book me-2"></i>Pest Encyclopedia</h4>
+        <div class="d-flex gap-2">
+          <input type="text" class="form-control form-control-sm" id="lib-search" placeholder="Search pests..." style="width:200px" oninput="filterLibrary()">
+          <select class="form-select form-select-sm" id="lib-crop" style="width:auto" onchange="filterLibrary()">
+            <option value="all">All Crops</option>
+            <option value="Rice">Rice</option>
+            <option value="Corn">Corn</option>
+            <option value="Wheat">Wheat</option>
+            <option value="Vegetables">Vegetables</option>
+            <option value="Cotton">Cotton</option>
+            <option value="Citrus">Citrus</option>
+            <option value="Multiple">Multiple</option>
+          </select>
+          <select class="form-select form-select-sm" id="lib-severity" style="width:auto" onchange="filterLibrary()">
+            <option value="all">All Severity</option>
+            <option value="High">🔴 High</option>
+            <option value="Medium">🟡 Medium</option>
+            <option value="Critical">⚫ Critical</option>
+          </select>
+        </div>
+      </div>
+      <div class="row g-3" id="lib-grid"></div>
+    </div>
+
   </div>
   <!-- Footer -->
   <div class="border-top px-6 py-3 text-center small text-secondary">
@@ -514,7 +554,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="/static/js/dashboard.js?v=5"></script>
+<script src="/static/js/dashboard.js?v=6"></script>
 <!-- Print CSS -->
 <style>@media print{#miniSidebar,.border-top,.border-bottom,#toasts,#offline-banner,button,.btn,.nav-link,.form-control,.form-select,.form-check{display:none!important}#content{margin:0!important;padding:0!important}.page-section{display:block!important}.card{break-inside:avoid;border:1px solid #ddd!important;box-shadow:none!important}body{background:#fff!important;color:#000!important}.text-secondary{color:#666!important}h1,h2,h3,h4,h5,h6{color:#000!important}}</style>
 </body>

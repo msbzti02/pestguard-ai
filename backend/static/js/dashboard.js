@@ -5,7 +5,7 @@ const API='';let curPage='dashboard',sid='s-'+Date.now(),chatH=[],lastPred=null;
 function toast(m,t='info'){const c=document.getElementById('toasts');const d=document.createElement('div');d.className=`alert alert-${t==='error'?'danger':t==='success'?'success':'info'} alert-dismissible fade show`;d.innerHTML=m+'<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';c.appendChild(d);setTimeout(()=>d.remove(),4000);}
 
 // Nav
-function nav(p){curPage=p;document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));document.getElementById('page-'+p)?.classList.add('active');document.querySelectorAll('#miniSidebar .nav-link').forEach(a=>{a.classList.toggle('active',a.dataset.page===p);});if(p==='heatmap')initMap();if(p==='weather')fetchWeather();if(p==='chat')initChat();if(p==='predict')initUpload();if(p==='analytics')loadAnalytics();}
+function nav(p){curPage=p;document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));document.getElementById('page-'+p)?.classList.add('active');document.querySelectorAll('#miniSidebar .nav-link').forEach(a=>{a.classList.toggle('active',a.dataset.page===p);});if(p==='heatmap')initMap();if(p==='weather')fetchWeather();if(p==='chat')initChat();if(p==='predict')initUpload();if(p==='analytics')loadAnalytics();if(p==='library')loadPestLibrary();}
 document.querySelectorAll('[data-page]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();nav(a.dataset.page);}));
 
 // Status
@@ -100,7 +100,7 @@ async function submitPrediction(){if(!window._file)return;const b=document.getEl
         ${confGauge(d.confidence*100,gColor)}
         <div class="fs-3 fw-bold mt-2">${d.pest_name}</div>
         <div class="mt-2 small text-secondary">Category: ${d.category_id} · Crop: ${d.crop||'Unknown'}</div>
-        ${d.is_mock?'<div class="text-warning small mt-2">⚠️ Mock prediction (D3 model pending)</div>':''}
+        <div class="mt-2"><span class="badge ${d.confidence>=0.7?'bg-danger':'bg-warning'} bg-opacity-25" style="font-size:11px">${d.confidence>=0.7?'🔴 HIGH RISK PEST':'🟡 MODERATE RISK'}</span></div>
         ${top3}
       </div></div></div>
       <div class="col-md-6"><div class="card card-lg"><div class="card-body">
@@ -306,6 +306,8 @@ async function fetchWeather(){const lat=document.getElementById('w-lat').value,l
         }).render();
       }
     }
+    // 7-day spray calendar
+    loadSprayCalendar(lat,lon);
     // Start auto-refresh countdown
     startWeatherCountdown();
     _sessionStats.weather++;updateSessionStats();
@@ -840,3 +842,87 @@ async function runComparison(){
 
 // Auto-refresh analytics when on that page
 setInterval(()=>{if(document.getElementById('page-analytics')?.classList.contains('active'))loadAnalytics();},5000);
+
+// ============= PEST LIBRARY =============
+let _libraryData=[];
+async function loadPestLibrary(){
+  if(_libraryData.length){renderLibrary(_libraryData);return;}
+  try{
+    const r=await fetch('/pest-library');const d=await r.json();
+    _libraryData=d.pests||[];
+    renderLibrary(_libraryData);
+  }catch(e){document.getElementById('lib-grid').innerHTML='<div class="text-danger">Failed to load library.</div>';}
+}
+function filterLibrary(){
+  const q=(document.getElementById('lib-search')?.value||'').toLowerCase();
+  const crop=document.getElementById('lib-crop')?.value||'all';
+  const sev=document.getElementById('lib-severity')?.value||'all';
+  const filtered=_libraryData.filter(p=>{
+    if(q&&!p.pest_name.toLowerCase().includes(q)&&!p.scientific.toLowerCase().includes(q))return false;
+    if(crop!=='all'&&!p.crops.some(c=>c.toLowerCase().includes(crop.toLowerCase())))return false;
+    if(sev!=='all'&&p.severity!==sev)return false;
+    return true;
+  });
+  renderLibrary(filtered);
+}
+function renderLibrary(pests){
+  const grid=document.getElementById('lib-grid');if(!grid)return;
+  if(!pests.length){grid.innerHTML='<div class="col-12 text-center text-secondary py-5"><i class="ti ti-search-off fs-1"></i><p class="mt-2">No pests match your filters.</p></div>';return;}
+  const sevColors={High:'#ef4444',Medium:'#f59e0b',Critical:'#dc2626',Low:'#10b981'};
+  grid.innerHTML=pests.map(p=>{
+    const sc=sevColors[p.severity]||'#6b7280';
+    const cropTags=p.crops.map(c=>`<span class="badge bg-dark bg-opacity-50 me-1" style="font-size:10px">${c}</span>`).join('');
+    const steps=p.treatment?p.treatment.map(t=>`<div class="d-flex align-items-center gap-2 mb-1"><span class="badge bg-dark bg-opacity-50" style="font-size:9px;min-width:45px">Day ${t.day}</span><span class="small text-secondary">${t.step}</span></div>`).join(''):'<span class="small text-secondary">No treatment data</span>';
+    return `<div class="col-md-6 col-lg-4">
+      <div class="card card-lg h-100" style="border-left:3px solid ${sc}">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div>
+              <h6 class="mb-0">${p.pest_name}</h6>
+              <small class="text-secondary fst-italic">${p.scientific}</small>
+            </div>
+            <span class="badge" style="background:${sc}20;color:${sc};font-size:10px">${p.severity}</span>
+          </div>
+          <p class="small text-secondary mb-2" style="line-height:1.5">${p.description}</p>
+          <div class="mb-2">${cropTags}</div>
+          <div class="d-flex gap-3 small text-secondary mb-2">
+            <span><i class="ti ti-dna me-1"></i>${p.family}</span>
+            <span><i class="ti ti-clock me-1"></i>${p.lifecycle}</span>
+          </div>
+          <div class="mt-2 pt-2" style="border-top:1px solid rgba(255,255,255,0.06)">
+            <div class="small fw-bold mb-1"><i class="ti ti-first-aid-kit me-1"></i>Treatment Steps</div>
+            ${steps}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ============= 7-DAY SPRAY CALENDAR =============
+async function loadSprayCalendar(lat,lon){
+  const card=document.getElementById('spray-calendar-card');if(!card)return;
+  try{
+    const r=await fetch(`/weather/forecast/${lat}/${lon}`);const d=await r.json();
+    if(!d.forecast||!d.forecast.length){card.style.display='none';return;}
+    card.style.display='block';
+    const cal=document.getElementById('spray-calendar');
+    const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    cal.innerHTML=d.forecast.map((day,i)=>{
+      const dt=new Date(day.date);
+      const dayName=i===0?'Today':i===1?'Tomorrow':days[dt.getDay()];
+      const safe=day.safe_to_spray;
+      const bg=safe?'rgba(16,185,129,0.15)':'rgba(239,68,68,0.15)';
+      const border=safe?'#10b981':'#ef4444';
+      const icon=safe?'✅':'❌';
+      return `<div class="text-center p-3 rounded-3 flex-fill" style="background:${bg};border:1px solid ${border}30;min-width:110px;animation:card-enter 0.4s ease ${i*0.1}s both">
+        <div class="small fw-bold mb-1">${dayName}</div>
+        <div class="small text-secondary mb-2">${dt.toLocaleDateString('en',{month:'short',day:'numeric'})}</div>
+        <div class="fs-4 mb-1">${icon}</div>
+        <div class="small fw-bold" style="color:${border}">${safe?'SAFE':'UNSAFE'}</div>
+        <div class="small text-secondary mt-1">${day.temp_max}°C · ${day.rain_prob}%🌧</div>
+        <div class="small text-secondary">${day.wind_max} km/h 💨</div>
+      </div>`;
+    }).join('');
+  }catch(e){card.style.display='none';}
+}

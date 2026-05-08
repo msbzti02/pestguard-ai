@@ -962,6 +962,77 @@ async def get_pest_info(pest_name: str):
     return {"found": False, "pest_name": pest_name, "message": "Pest not in database"}
 
 
+@app.get("/pest-library", tags=["Knowledge"])
+async def pest_library():
+    """Get all pests in the knowledge base for the Pest Encyclopedia."""
+    pests = []
+    for name, info in PEST_DATABASE.items():
+        pests.append({"pest_name": name, **info})
+    return {"pests": pests, "total": len(pests)}
+
+
+@app.get("/weather/forecast/{lat}/{lon}", tags=["Weather"])
+async def weather_forecast_7day(lat: float, lon: float):
+    """Get 7-day weather forecast with spray safety assessment for each day."""
+    import httpx
+    try:
+        url = (
+            f"https://api.open-meteo.com/v1/forecast?"
+            f"latitude={lat}&longitude={lon}"
+            f"&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,"
+            f"wind_speed_10m_max,weathercode"
+            f"&timezone=auto&forecast_days=7"
+        )
+        async with httpx.AsyncClient(timeout=10) as client:
+            r = await client.get(url)
+            r.raise_for_status()
+            data = r.json()
+
+        daily = data.get("daily", {})
+        dates = daily.get("time", [])
+        temp_max = daily.get("temperature_2m_max", [])
+        temp_min = daily.get("temperature_2m_min", [])
+        rain_prob = daily.get("precipitation_probability_max", [])
+        wind_max = daily.get("wind_speed_10m_max", [])
+        codes = daily.get("weathercode", [])
+
+        wmo_map = {0: "Clear", 1: "Mostly Clear", 2: "Partly Cloudy", 3: "Overcast",
+                    45: "Fog", 48: "Rime Fog", 51: "Light Drizzle", 53: "Drizzle",
+                    55: "Heavy Drizzle", 61: "Light Rain", 63: "Rain", 65: "Heavy Rain",
+                    71: "Light Snow", 73: "Snow", 75: "Heavy Snow", 80: "Rain Showers",
+                    81: "Rain Showers", 82: "Heavy Showers", 95: "Thunderstorm"}
+
+        forecast = []
+        for i in range(len(dates)):
+            t_max = temp_max[i] if i < len(temp_max) else 25
+            t_min = temp_min[i] if i < len(temp_min) else 15
+            rp = rain_prob[i] if i < len(rain_prob) else 0
+            wm = wind_max[i] if i < len(wind_max) else 5
+            code = codes[i] if i < len(codes) else 0
+
+            safe = (
+                wm < 15 and
+                rp < 50 and
+                t_max > 5 and t_max < 38 and
+                code < 51
+            )
+
+            forecast.append({
+                "date": dates[i],
+                "temp_max": t_max,
+                "temp_min": t_min,
+                "rain_prob": rp,
+                "wind_max": round(wm, 1),
+                "condition": wmo_map.get(code, "Unknown"),
+                "safe_to_spray": safe,
+            })
+
+        return {"forecast": forecast, "lat": lat, "lon": lon}
+
+    except Exception as exc:
+        log.warning(f"7-day forecast failed: {exc}")
+        return {"forecast": [], "error": str(exc)}
+
 # ============================================================================
 # ENDPOINT: System Analytics — real-time performance metrics
 # ============================================================================
