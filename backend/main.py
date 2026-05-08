@@ -409,7 +409,7 @@ async def predict_pest(
         if _vlm_ready and _vlm is not None:
             vlm_result = _vlm.describe(str(save_path))
         else:
-            vlm_result = mock_api.get_vlm_description(image_path=str(save_path))
+            vlm_result = mock_api.get_vlm_description(image_path=str(save_path), pest_name=prediction["pest_name"])
 
         # ── 7. Mock Grad-CAM heatmap ──
         gradcam_result = mock_api.get_gradcam(image_path=str(save_path))
