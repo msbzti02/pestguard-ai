@@ -274,4 +274,3 @@ def get_mock_heatmap_data() -> list:
         {"grid_lat": 37.2, "grid_lon": 28.4, "pest_type": "Red Spider Mite", "count": 11, "region": "Mugla", "severity": "Medium"},
         {"grid_lat": 39.1, "grid_lon": 29.5, "pest_type": "Colorado Potato Beetle", "count": 19, "region": "Kutahya", "severity": "High"},
     ]
-"""
