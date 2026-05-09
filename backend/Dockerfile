@@ -43,7 +43,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN groupadd -r pestguard && useradd -r -g pestguard -d /app pestguard
 
 # Copy application code
-COPY main.py mock_api.py ./
+COPY main.py mock_api.py economics.py risk_engine.py ./
 COPY agent/ agent/
 COPY rag/ rag/
 COPY vlm/ vlm/

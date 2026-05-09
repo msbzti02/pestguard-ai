@@ -19,7 +19,7 @@ import os
 import time
 import shutil
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from contextlib import asynccontextmanager
 
@@ -28,7 +28,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, HTMLResponse
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
+from collections import Counter
 
 # ── Internal utilities ────────────────────────────────────────────────────────
 import mock_api
@@ -39,6 +40,21 @@ from core.validators import (
     validate_confidence,
     validate_pest_report,
     validate_image_upload,
+)
+from economics import (
+    calculate_economic_impact,
+    get_crop_stage_advice,
+    CROP_ECONOMICS,
+    CROP_GROWTH_STAGES,
+    PEST_YIELD_LOSS,
+)
+from risk_engine import (
+    calculate_risk_score,
+    record_prediction,
+    get_trend_data,
+    check_outbreak_alerts,
+    get_pest_lifecycle,
+    PEST_BASE_SEVERITY,
 )
 
 log = get_logger("pestguard.main")
@@ -256,6 +272,58 @@ class HeatmapReport(BaseModel):
     pest_type: str
 
 
+class EconomicImpactRequest(BaseModel):
+    """Request body for the economic impact calculator."""
+    pest_name: str
+    crop: str
+    field_size_ha: float = 1.0
+    infestation_level: str = "moderate"
+    growth_stage: Optional[str] = None
+
+
+class CropStageRequest(BaseModel):
+    """Request body for the crop growth stage advisor."""
+    pest_name: str
+    crop: str
+    growth_stage: str
+
+
+class FeedbackRequest(BaseModel):
+    """Request body for user prediction feedback."""
+    session_id: str
+    prediction_pest: str
+    confidence: float
+    is_correct: bool
+    actual_pest: Optional[str] = None
+    comments: Optional[str] = None
+    image_quality_notes: Optional[str] = None
+
+
+class RiskScoreRequest(BaseModel):
+    """Request body for the pest risk score engine."""
+    pest_name: str
+    lat: Optional[float] = 39.0
+    lon: Optional[float] = 35.0
+    confidence: float = 0.8
+
+
+class TreatmentPlanRequest(BaseModel):
+    """Request body for starting a treatment plan."""
+    pest_name: str
+    crop: str
+    session_id: str
+    field_size_ha: float = 1.0
+
+
+class FarmerFieldRequest(BaseModel):
+    """Request body for saving a farmer field."""
+    name: str
+    lat: float
+    lon: float
+    crop: str
+    area_ha: float = 1.0
+
+
 # ============================================================================
 # In-memory stores (will be replaced by database in production)
 # ============================================================================
@@ -429,6 +497,8 @@ async def predict_pest(
             "crop": prediction["crop"],
             "timestamp": prediction["timestamp"],
         }
+        # Record for trend tracking (#9)
+        record_prediction(prediction["pest_name"], prediction["confidence"], prediction["crop"])
 
         if sid not in prediction_history:
             prediction_history[sid] = []
@@ -1032,6 +1102,778 @@ async def weather_forecast_7day(lat: float, lon: float):
     except Exception as exc:
         log.warning(f"7-day forecast failed: {exc}")
         return {"forecast": [], "error": str(exc)}
+
+# ============================================================================
+# FEATURE 1: Economic Impact Calculator (UC-8)
+# ============================================================================
+@app.post("/economic-impact", tags=["Economics"])
+async def economic_impact(request: EconomicImpactRequest):
+    """
+    Calculate comprehensive economic impact of a pest infestation.
+
+    Returns yield loss estimates, treatment cost comparisons, ROI analysis,
+    and urgency-based recommendations. Factors in crop growth stage
+    vulnerability when provided.
+    """
+    log.info(
+        f"Economic impact: {request.pest_name} on {request.crop}, "
+        f"{request.field_size_ha}ha, level={request.infestation_level}"
+    )
+    # Record for trend tracking
+    record_prediction(request.pest_name, 0.8, request.crop)
+
+    result = calculate_economic_impact(
+        pest_name=request.pest_name,
+        crop=request.crop,
+        field_size_ha=request.field_size_ha,
+        infestation_level=request.infestation_level,
+        growth_stage=request.growth_stage,
+    )
+
+    log_activity(
+        "💰 Economic Impact",
+        f"{request.pest_name}/{request.crop} — ${result['yield_impact']['potential_loss_usd']:,.0f} risk"
+    )
+
+    return result
+
+
+@app.get("/economic-impact/crops", tags=["Economics"])
+async def get_crop_list():
+    """Get available crops and their economic data for the calculator."""
+    crops = []
+    for name, data in CROP_ECONOMICS.items():
+        value_per_ha = round(data["price_per_ton"] * data["avg_yield_ton_per_ha"], 2)
+        crops.append({
+            "crop": name,
+            "price_per_ton": data["price_per_ton"],
+            "avg_yield_ton_per_ha": data["avg_yield_ton_per_ha"],
+            "value_per_ha": value_per_ha,
+        })
+    return {"crops": crops}
+
+
+# ============================================================================
+# FEATURE 2: Crop Growth Stage Advisor (UC-9)
+# ============================================================================
+@app.post("/crop-stage-advice", tags=["Agronomy"])
+async def crop_stage_advice(request: CropStageRequest):
+    """
+    Get stage-specific pest management recommendations.
+
+    Returns vulnerability assessment, chemical restrictions, recommended
+    actions, and upcoming stage warnings. Enforces pre-harvest intervals.
+    """
+    log.info(f"Stage advice: {request.pest_name} on {request.crop} at {request.growth_stage}")
+
+    result = get_crop_stage_advice(
+        pest_name=request.pest_name,
+        crop=request.crop,
+        growth_stage=request.growth_stage,
+    )
+
+    log_activity(
+        "🌱 Stage Advice",
+        f"{request.pest_name}/{request.crop} — {result['vulnerability']['level']} risk"
+    )
+
+    return result
+
+
+@app.get("/crop-stages/{crop}", tags=["Agronomy"])
+async def get_crop_stages(crop: str):
+    """Get all growth stages for a crop."""
+    stages = CROP_GROWTH_STAGES.get(crop, CROP_GROWTH_STAGES.get("Vegetables"))
+    return {
+        "crop": crop,
+        "stages": stages["stages"],
+        "pre_harvest_interval": stages["pre_harvest_interval"],
+        "available_crops": list(CROP_GROWTH_STAGES.keys()),
+    }
+
+
+# ============================================================================
+# FEATURE 3: Image Quality Scorer (UC-10)
+# ============================================================================
+@app.post("/image-quality", tags=["Quality"])
+async def assess_image_quality(file: UploadFile = File(...)):
+    """
+    Assess uploaded image quality before prediction.
+
+    Checks file size, dimensions, format, estimated blur, and brightness.
+    Returns a 0-100 quality score with specific improvement suggestions.
+    """
+    content = await file.read()
+    file_size_kb = len(content) / 1024
+    file_size_mb = file_size_kb / 1024
+    content_type = file.content_type or "unknown"
+
+    score = 100
+    issues = []
+    suggestions = []
+    grade_details = {}
+
+    # ── Check file size ──
+    if file_size_mb > 10:
+        score -= 30
+        issues.append("File too large (>10MB) — may slow processing")
+        suggestions.append("Compress the image or reduce resolution")
+    elif file_size_kb < 50:
+        score -= 25
+        issues.append("File very small (<50KB) — likely too low resolution")
+        suggestions.append("Use a higher resolution camera or get closer to the subject")
+    elif file_size_kb < 200:
+        score -= 10
+        issues.append("File relatively small — resolution may be limited")
+    grade_details["file_size"] = {"kb": round(file_size_kb, 1), "status": "good" if 200 <= file_size_kb <= 10240 else "warning"}
+
+    # ── Check format ──
+    valid_types = ["image/jpeg", "image/png", "image/webp", "image/jpg"]
+    if content_type not in valid_types:
+        score -= 20
+        issues.append(f"Unsupported format: {content_type}")
+        suggestions.append("Use JPEG, PNG, or WebP format")
+    grade_details["format"] = {"type": content_type, "status": "good" if content_type in valid_types else "error"}
+
+    # ── Analyze image dimensions using raw bytes ──
+    width, height = 0, 0
+    try:
+        if content[:8] == b'\x89PNG\r\n\x1a\n':
+            # PNG: width/height at bytes 16-24
+            import struct
+            width, height = struct.unpack('>II', content[16:24])
+        elif content[:2] in (b'\xff\xd8',):
+            # JPEG: parse SOF markers
+            import struct
+            i = 2
+            while i < len(content) - 9:
+                if content[i] == 0xFF:
+                    marker = content[i+1]
+                    if marker in (0xC0, 0xC1, 0xC2):
+                        height, width = struct.unpack('>HH', content[i+5:i+9])
+                        break
+                    elif marker == 0xD9:
+                        break
+                    else:
+                        if i+2 < len(content) - 1:
+                            length = struct.unpack('>H', content[i+2:i+4])[0]
+                            i += 2 + length
+                        else:
+                            break
+                else:
+                    i += 1
+        elif content[:4] == b'RIFF' and content[8:12] == b'WEBP':
+            # WebP
+            import struct
+            if content[12:16] == b'VP8 ':
+                width = struct.unpack('<H', content[26:28])[0] & 0x3FFF
+                height = struct.unpack('<H', content[28:30])[0] & 0x3FFF
+    except Exception:
+        pass
+
+    if width > 0 and height > 0:
+        megapixels = round((width * height) / 1_000_000, 2)
+        aspect_ratio = round(width / max(height, 1), 2)
+
+        if megapixels < 0.3:
+            score -= 25
+            issues.append(f"Very low resolution ({width}×{height}, {megapixels}MP)")
+            suggestions.append("Use at least 640×480 pixels for accurate identification")
+        elif megapixels < 1.0:
+            score -= 10
+            issues.append(f"Low resolution ({width}×{height}, {megapixels}MP)")
+            suggestions.append("Higher resolution images improve accuracy")
+        elif megapixels > 20:
+            score -= 5
+            issues.append(f"Very high resolution ({width}×{height}, {megapixels}MP) — will be resized")
+
+        if aspect_ratio > 4 or aspect_ratio < 0.25:
+            score -= 10
+            issues.append(f"Unusual aspect ratio ({aspect_ratio})")
+            suggestions.append("Use standard photo proportions (4:3 or 16:9)")
+
+        grade_details["dimensions"] = {
+            "width": width, "height": height,
+            "megapixels": megapixels, "aspect_ratio": aspect_ratio,
+            "status": "good" if megapixels >= 1.0 else "warning"
+        }
+    else:
+        score -= 5
+        grade_details["dimensions"] = {"width": 0, "height": 0, "status": "unknown"}
+
+    # ── Basic brightness estimation (sample pixel bytes) ──
+    sample_size = min(10000, len(content))
+    sample = content[-sample_size:]
+    avg_byte = sum(sample) / len(sample)
+    if avg_byte < 40:
+        score -= 15
+        issues.append("Image appears very dark")
+        suggestions.append("Improve lighting — photograph in daylight or use flash")
+    elif avg_byte < 70:
+        score -= 8
+        issues.append("Image may be underexposed")
+        suggestions.append("Try photographing with better lighting conditions")
+    elif avg_byte > 240:
+        score -= 12
+        issues.append("Image appears overexposed/washed out")
+        suggestions.append("Reduce exposure or move to shade")
+    grade_details["brightness"] = {
+        "avg_intensity": round(avg_byte, 1),
+        "status": "good" if 70 <= avg_byte <= 240 else "warning"
+    }
+
+    # ── Entropy-based detail estimation ──
+    byte_counts = Counter(sample)
+    total_bytes = len(sample)
+    import math
+    entropy = -sum((c/total_bytes) * math.log2(c/total_bytes) for c in byte_counts.values() if c > 0)
+    if entropy < 4.0:
+        score -= 15
+        issues.append("Image lacks detail (possibly blurry or uniform)")
+        suggestions.append("Hold the camera steady and focus on the pest. Avoid motion blur")
+    elif entropy < 5.5:
+        score -= 5
+        issues.append("Image has limited detail")
+    grade_details["detail"] = {
+        "entropy": round(entropy, 2),
+        "status": "good" if entropy >= 5.5 else "warning"
+    }
+
+    # Clamp score
+    score = max(0, min(100, score))
+
+    # Grade
+    if score >= 85:
+        grade = "Excellent"
+        grade_color = "#10b981"
+    elif score >= 70:
+        grade = "Good"
+        grade_color = "#22c55e"
+    elif score >= 50:
+        grade = "Fair"
+        grade_color = "#f59e0b"
+    elif score >= 30:
+        grade = "Poor"
+        grade_color = "#ef4444"
+    else:
+        grade = "Unusable"
+        grade_color = "#dc2626"
+
+    if not issues:
+        suggestions.append("Image quality is excellent — ready for accurate prediction")
+
+    log.info(f"Image quality: {grade} ({score}/100) — {len(issues)} issues")
+    log_activity("📸 Quality Check", f"{grade} ({score}/100)")
+
+    return {
+        "quality_score": score,
+        "grade": grade,
+        "grade_color": grade_color,
+        "file_size_kb": round(file_size_kb, 1),
+        "content_type": content_type,
+        "dimensions": grade_details.get("dimensions", {}),
+        "issues": issues,
+        "suggestions": suggestions,
+        "grade_details": grade_details,
+        "ready_for_prediction": score >= 40,
+    }
+
+
+# ============================================================================
+# FEATURE 4: Batch Prediction (UC-11)
+# ============================================================================
+@app.post("/predict/batch", tags=["Prediction"])
+async def batch_predict(
+    files: list[UploadFile] = File(...),
+    session_id: str = Form(default=""),
+):
+    """
+    Upload multiple pest images for batch classification.
+
+    Returns individual predictions plus summary statistics:
+    - Most common pest across all images
+    - Average confidence score
+    - Unique species count
+    - Cross-reference analysis
+    """
+    if len(files) > 10:
+        raise HTTPException(status_code=400, detail="Maximum 10 images per batch")
+    if len(files) < 2:
+        raise HTTPException(status_code=400, detail="Upload at least 2 images for batch analysis")
+
+    sid = session_id or str(uuid.uuid4())
+    predictions = []
+    errors = []
+
+    for i, file in enumerate(files):
+        save_path = None
+        try:
+            content = await file.read()
+            validate_image_upload(
+                content_type=file.content_type,
+                file_size=len(content),
+            )
+
+            file_id = str(uuid.uuid4())
+            file_ext = Path(file.filename).suffix if file.filename else ".jpg"
+            save_path = UPLOAD_DIR / f"{file_id}{file_ext}"
+            save_path.write_bytes(content)
+
+            # Get prediction
+            prediction = mock_api.get_prediction(image_path=str(save_path))
+
+            # VLM description
+            if _vlm_ready and _vlm is not None:
+                vlm_result = _vlm.describe(str(save_path))
+            else:
+                vlm_result = mock_api.get_vlm_description(
+                    image_path=str(save_path),
+                    pest_name=prediction["pest_name"]
+                )
+
+            predictions.append({
+                "index": i,
+                "filename": file.filename or f"image_{i}",
+                "pest_name": prediction["pest_name"],
+                "confidence": prediction["confidence"],
+                "category_id": prediction["category_id"],
+                "crop": prediction["crop"],
+                "severity": prediction.get("severity", "Unknown"),
+                "vlm_description": vlm_result["description"],
+                "top_3": prediction.get("top_3", []),
+                "is_mock": prediction["is_mock"],
+            })
+
+        except Exception as e:
+            errors.append({"index": i, "filename": file.filename or f"image_{i}", "error": str(e)})
+        finally:
+            if save_path and save_path.exists():
+                try:
+                    save_path.unlink()
+                except Exception:
+                    pass
+
+    # ── Generate batch summary statistics ──
+    if predictions:
+        pest_counts = Counter(p["pest_name"] for p in predictions)
+        crop_counts = Counter(p["crop"] for p in predictions)
+        severity_counts = Counter(p.get("severity", "Unknown") for p in predictions)
+        avg_confidence = round(sum(p["confidence"] for p in predictions) / len(predictions), 3)
+        most_common_pest = pest_counts.most_common(1)[0][0]
+        highest_conf = max(predictions, key=lambda p: p["confidence"])
+        lowest_conf = min(predictions, key=lambda p: p["confidence"])
+
+        # Cross-reference: are images of the same pest?
+        all_same = len(pest_counts) == 1
+        cross_ref = {
+            "all_same_pest": all_same,
+            "unique_pests": len(pest_counts),
+            "pest_distribution": dict(pest_counts),
+            "crop_distribution": dict(crop_counts),
+            "severity_distribution": dict(severity_counts),
+            "consensus": most_common_pest if all_same else f"Mixed — {len(pest_counts)} different species detected",
+        }
+
+        summary = {
+            "total_images": len(files),
+            "successful": len(predictions),
+            "failed": len(errors),
+            "unique_pests": len(pest_counts),
+            "most_common_pest": most_common_pest,
+            "most_common_count": pest_counts[most_common_pest],
+            "avg_confidence": avg_confidence,
+            "highest_confidence": {"pest": highest_conf["pest_name"], "confidence": highest_conf["confidence"], "file": highest_conf["filename"]},
+            "lowest_confidence": {"pest": lowest_conf["pest_name"], "confidence": lowest_conf["confidence"], "file": lowest_conf["filename"]},
+        }
+    else:
+        summary = {"total_images": len(files), "successful": 0, "failed": len(errors)}
+        cross_ref = {}
+
+    log.info(f"Batch prediction: {len(predictions)}/{len(files)} successful, avg conf={summary.get('avg_confidence', 0)}")
+    log_activity("📦 Batch Predict", f"{len(predictions)} images → {summary.get('most_common_pest', 'N/A')}")
+
+    return {
+        "session_id": sid,
+        "predictions": predictions,
+        "errors": errors,
+        "summary": summary,
+        "cross_reference": cross_ref,
+        "timestamp": datetime.now().isoformat(),
+    }
+
+
+# ============================================================================
+# FEATURE 5: User Feedback Loop (UC-12)
+# ============================================================================
+_feedback_store: list = []
+
+@app.post("/feedback", tags=["Feedback"])
+async def submit_feedback(request: FeedbackRequest):
+    """
+    Submit user feedback on a prediction result.
+
+    Users can confirm (is_correct=True) or correct (is_correct=False)
+    a prediction. Corrections include the actual pest name.
+    This data feeds into model improvement metrics.
+    """
+    feedback = {
+        "session_id": request.session_id,
+        "prediction_pest": request.prediction_pest,
+        "confidence": request.confidence,
+        "is_correct": request.is_correct,
+        "actual_pest": request.actual_pest if not request.is_correct else request.prediction_pest,
+        "comments": request.comments,
+        "image_quality_notes": request.image_quality_notes,
+        "timestamp": datetime.now().isoformat(),
+    }
+
+    _feedback_store.append(feedback)
+
+    # Keep last 500 feedback entries
+    if len(_feedback_store) > 500:
+        _feedback_store.pop(0)
+
+    log.info(
+        f"Feedback [{request.session_id[:8]}]: "
+        f"{'✅ Correct' if request.is_correct else '❌ Wrong'} — "
+        f"predicted={request.prediction_pest}, actual={request.actual_pest or 'confirmed'}"
+    )
+
+    log_activity(
+        "📝 Feedback",
+        f"{'✅' if request.is_correct else '❌'} {request.prediction_pest}"
+        + (f" → {request.actual_pest}" if not request.is_correct and request.actual_pest else "")
+    )
+
+    return {
+        "status": "received",
+        "message": "Thank you for your feedback! This helps improve the model.",
+        "feedback_id": len(_feedback_store),
+        "total_feedback": len(_feedback_store),
+    }
+
+
+@app.get("/feedback/analytics", tags=["Feedback"])
+async def feedback_analytics():
+    """
+    Get aggregated prediction feedback analytics.
+
+    Returns accuracy metrics, common misidentifications,
+    confidence distribution, and improvement suggestions.
+    """
+    if not _feedback_store:
+        return {
+            "total_feedback": 0,
+            "accuracy_rate": 0,
+            "message": "No feedback collected yet. Predictions need user verification.",
+        }
+
+    total = len(_feedback_store)
+    correct = sum(1 for f in _feedback_store if f["is_correct"])
+    incorrect = total - correct
+    accuracy = round(correct / max(total, 1) * 100, 1)
+
+    # Common misidentifications
+    misidentifications = []
+    confusion_matrix = {}
+    for f in _feedback_store:
+        if not f["is_correct"] and f["actual_pest"]:
+            key = f"{f['prediction_pest']} → {f['actual_pest']}"
+            confusion_matrix[key] = confusion_matrix.get(key, 0) + 1
+
+    for pair, count in sorted(confusion_matrix.items(), key=lambda x: -x[1])[:10]:
+        predicted, actual = pair.split(" → ")
+        misidentifications.append({
+            "predicted": predicted,
+            "actual": actual,
+            "count": count,
+            "percentage": round(count / max(incorrect, 1) * 100, 1),
+        })
+
+    # Confidence distribution for correct vs incorrect
+    correct_confs = [f["confidence"] for f in _feedback_store if f["is_correct"]]
+    incorrect_confs = [f["confidence"] for f in _feedback_store if not f["is_correct"]]
+
+    avg_correct_conf = round(sum(correct_confs) / max(len(correct_confs), 1), 3) if correct_confs else 0
+    avg_incorrect_conf = round(sum(incorrect_confs) / max(len(incorrect_confs), 1), 3) if incorrect_confs else 0
+
+    # Per-pest accuracy
+    pest_stats = {}
+    for f in _feedback_store:
+        pest = f["prediction_pest"]
+        if pest not in pest_stats:
+            pest_stats[pest] = {"correct": 0, "total": 0}
+        pest_stats[pest]["total"] += 1
+        if f["is_correct"]:
+            pest_stats[pest]["correct"] += 1
+
+    per_pest_accuracy = []
+    for pest, stats in sorted(pest_stats.items(), key=lambda x: -x[1]["total"]):
+        per_pest_accuracy.append({
+            "pest": pest,
+            "total": stats["total"],
+            "correct": stats["correct"],
+            "accuracy": round(stats["correct"] / max(stats["total"], 1) * 100, 1),
+        })
+
+    # Improvement suggestions
+    suggestions = []
+    if accuracy < 70:
+        suggestions.append("Model accuracy below 70% — retraining recommended with more diverse data")
+    if avg_incorrect_conf > 0.75:
+        suggestions.append(f"High-confidence errors detected (avg {avg_incorrect_conf:.0%}) — consider calibration")
+    if misidentifications:
+        top_confusion = misidentifications[0]
+        suggestions.append(f"Most common confusion: {top_confusion['predicted']} vs {top_confusion['actual']} ({top_confusion['count']} cases)")
+    if not suggestions:
+        suggestions.append("Model performing well based on user feedback")
+
+    # Timeline of recent feedback
+    recent = _feedback_store[-20:][::-1]
+    timeline = [{
+        "timestamp": f["timestamp"],
+        "pest": f["prediction_pest"],
+        "correct": f["is_correct"],
+        "actual": f.get("actual_pest"),
+        "confidence": f["confidence"],
+    } for f in recent]
+
+    return {
+        "total_feedback": total,
+        "correct": correct,
+        "incorrect": incorrect,
+        "accuracy_rate": accuracy,
+        "confidence_analysis": {
+            "avg_correct_confidence": avg_correct_conf,
+            "avg_incorrect_confidence": avg_incorrect_conf,
+            "confidence_gap": round(avg_correct_conf - avg_incorrect_conf, 3),
+        },
+        "misidentifications": misidentifications,
+        "per_pest_accuracy": per_pest_accuracy,
+        "suggestions": suggestions,
+        "recent_timeline": timeline,
+    }
+
+
+# ============================================================================
+# FEATURE 7: Pest Risk Score Engine
+# ============================================================================
+@app.post("/risk-score", tags=["Risk"])
+async def pest_risk_score(request: RiskScoreRequest):
+    """Calculate 0-100 pest risk score combining weather, region, season, severity."""
+    # Get weather data for location
+    try:
+        if _weather is not None:
+            w = _weather.get_current(request.lat, request.lon)
+        else:
+            w = mock_api.get_mock_weather(request.lat, request.lon)
+    except Exception:
+        w = mock_api.get_mock_weather(request.lat, request.lon)
+
+    # Count nearby heatmap reports
+    nearby = sum(1 for p in heatmap_reports
+                 if abs(p.get("grid_lat",0) - request.lat) < 2
+                 and abs(p.get("grid_lon",0) - request.lon) < 2
+                 and p.get("pest_type") == request.pest_name)
+
+    result = calculate_risk_score(
+        pest_name=request.pest_name,
+        temperature=w.get("temperature", 25),
+        humidity=w.get("humidity", 60),
+        wind_speed=w.get("wind_speed", 10),
+        rain_probability=w.get("rain_probability", 20),
+        nearby_reports=nearby,
+        confidence=request.confidence,
+    )
+    result["weather"] = {
+        "temperature": w.get("temperature"),
+        "humidity": w.get("humidity"),
+        "condition": w.get("condition"),
+        "safe_to_spray": w.get("safe_to_spray"),
+    }
+    log_activity("📊 Risk Score", f"{request.pest_name}: {result['risk_score']}/100 ({result['level']})")
+    return result
+
+
+# ============================================================================
+# FEATURE 8: Treatment Timeline Tracker
+# ============================================================================
+_treatment_plans: dict = {}
+
+@app.post("/treatment/start", tags=["Treatment"])
+async def start_treatment_plan(request: TreatmentPlanRequest):
+    """Start a tracked treatment plan for a detected pest."""
+    pest_info = PEST_DATABASE.get(request.pest_name)
+    if not pest_info or "treatment" not in pest_info:
+        raise HTTPException(status_code=404, detail=f"No treatment plan for {request.pest_name}")
+
+    plan_id = f"plan-{request.session_id}-{int(time.time())}"
+    start_date = datetime.now()
+    steps = []
+    for t in pest_info["treatment"]:
+        due = start_date + timedelta(days=t["day"])
+        steps.append({
+            "day": t["day"], "step": t["step"], "desc": t["desc"],
+            "method": t["method"],
+            "due_date": due.strftime("%Y-%m-%d"),
+            "due_display": due.strftime("%b %d, %Y"),
+            "completed": False,
+            "completed_at": None,
+        })
+
+    plan = {
+        "plan_id": plan_id, "pest_name": request.pest_name,
+        "crop": request.crop, "field_size_ha": request.field_size_ha,
+        "session_id": request.session_id,
+        "start_date": start_date.isoformat(),
+        "steps": steps,
+        "status": "active",
+        "progress": 0,
+    }
+    _treatment_plans[plan_id] = plan
+    log_activity("💊 Treatment", f"Started plan for {request.pest_name}")
+    return plan
+
+
+@app.get("/treatment/{plan_id}", tags=["Treatment"])
+async def get_treatment_plan(plan_id: str):
+    """Get a treatment plan by ID."""
+    plan = _treatment_plans.get(plan_id)
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    # Calculate progress and reminders
+    now = datetime.now()
+    completed = sum(1 for s in plan["steps"] if s["completed"])
+    plan["progress"] = round(completed / max(len(plan["steps"]), 1) * 100)
+    for s in plan["steps"]:
+        due = datetime.strptime(s["due_date"], "%Y-%m-%d")
+        if not s["completed"]:
+            days_until = (due - now).days
+            s["reminder"] = "🔴 OVERDUE" if days_until < 0 else \
+                            "🟡 TODAY" if days_until == 0 else \
+                            "🟢 Tomorrow" if days_until == 1 else \
+                            f"⏳ In {days_until} days"
+    return plan
+
+
+@app.post("/treatment/{plan_id}/complete/{step_index}", tags=["Treatment"])
+async def complete_treatment_step(plan_id: str, step_index: int):
+    """Mark a treatment step as completed."""
+    plan = _treatment_plans.get(plan_id)
+    if not plan:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    if step_index < 0 or step_index >= len(plan["steps"]):
+        raise HTTPException(status_code=400, detail="Invalid step index")
+    plan["steps"][step_index]["completed"] = True
+    plan["steps"][step_index]["completed_at"] = datetime.now().isoformat()
+    completed = sum(1 for s in plan["steps"] if s["completed"])
+    plan["progress"] = round(completed / len(plan["steps"]) * 100)
+    if all(s["completed"] for s in plan["steps"]):
+        plan["status"] = "completed"
+    log_activity("✅ Treatment Step", f"Step {step_index+1} completed for {plan['pest_name']}")
+    return {"status": "completed", "progress": plan["progress"], "plan_status": plan["status"]}
+
+
+@app.get("/treatment/active/{session_id}", tags=["Treatment"])
+async def get_active_plans(session_id: str):
+    """Get all active treatment plans for a session."""
+    plans = [p for p in _treatment_plans.values() if p["session_id"] == session_id]
+    return {"plans": plans, "total": len(plans)}
+
+
+# ============================================================================
+# FEATURE 9: Historical Trend Dashboard
+# ============================================================================
+@app.get("/trends", tags=["Trends"])
+async def get_trends(days: int = 30):
+    """Get pest detection trends over time."""
+    return get_trend_data(days)
+
+
+@app.post("/trends/record", tags=["Trends"])
+async def record_trend(pest_name: str = Form(...), confidence: float = Form(0.8), crop: str = Form("Unknown")):
+    """Manually record a prediction for trend tracking."""
+    record_prediction(pest_name, confidence, crop)
+    return {"status": "recorded"}
+
+
+# ============================================================================
+# FEATURE 10: Regional Alert System
+# ============================================================================
+@app.get("/alerts", tags=["Alerts"])
+async def get_outbreak_alerts(threshold: int = 8):
+    """Check for regional outbreak alerts based on heatmap data."""
+    alerts = check_outbreak_alerts(heatmap_reports, threshold)
+    return {"alerts": alerts, "total": len(alerts), "threshold": threshold}
+
+
+# ============================================================================
+# FEATURE 14: Pest Lifecycle Visualization
+# ============================================================================
+@app.get("/pest-lifecycle/{pest_name}", tags=["Knowledge"])
+async def pest_lifecycle(pest_name: str):
+    """Get lifecycle stage data for interactive visualization."""
+    return get_pest_lifecycle(pest_name)
+
+
+# ============================================================================
+# FEATURE 15: Farmer Dashboard with Saved Fields
+# ============================================================================
+_farmer_fields: list = []
+
+@app.post("/fields", tags=["Farmer"])
+async def save_field(request: FarmerFieldRequest):
+    """Save a farmer's field for monitoring."""
+    field = {
+        "id": f"field-{len(_farmer_fields)+1}",
+        "name": request.name,
+        "lat": request.lat, "lon": request.lon,
+        "crop": request.crop, "area_ha": request.area_ha,
+        "created": datetime.now().isoformat(),
+    }
+    _farmer_fields.append(field)
+    log_activity("🌾 Field Saved", f"{request.name} ({request.crop}, {request.area_ha}ha)")
+    return field
+
+
+@app.get("/fields", tags=["Farmer"])
+async def get_fields():
+    """Get all saved farmer fields with live status."""
+    results = []
+    for f in _farmer_fields:
+        try:
+            if _weather is not None:
+                w = _weather.get_current(f["lat"], f["lon"])
+            else:
+                w = mock_api.get_mock_weather(f["lat"], f["lon"])
+        except Exception:
+            w = mock_api.get_mock_weather(f["lat"], f["lon"])
+
+        nearby = sum(1 for p in heatmap_reports
+                     if abs(p.get("grid_lat",0) - f["lat"]) < 1
+                     and abs(p.get("grid_lon",0) - f["lon"]) < 1)
+
+        results.append({
+            **f,
+            "weather": {
+                "temperature": w.get("temperature"),
+                "humidity": w.get("humidity"),
+                "condition": w.get("condition"),
+                "safe_to_spray": w.get("safe_to_spray"),
+            },
+            "nearby_reports": nearby,
+            "risk_level": "High" if nearby >= 5 else "Moderate" if nearby >= 2 else "Low",
+        })
+    return {"fields": results, "total": len(results)}
+
+
+@app.delete("/fields/{field_id}", tags=["Farmer"])
+async def delete_field(field_id: str):
+    """Delete a saved field."""
+    global _farmer_fields
+    _farmer_fields = [f for f in _farmer_fields if f["id"] != field_id]
+    return {"status": "deleted"}
+
 
 # ============================================================================
 # ENDPOINT: System Analytics — real-time performance metrics

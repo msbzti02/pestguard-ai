@@ -154,6 +154,20 @@
         <span class="text">Pest Library</span>
       </a>
     </li>
+    <!-- Economic Impact -->
+    <li class="nav-item">
+      <a class="nav-link" href="#" data-page="economics" onclick="nav('economics');return false">
+        <span class="nav-icon"><i class="ti ti-calculator fs-5"></i></span>
+        <span class="text">Economic Impact</span>
+      </a>
+    </li>
+    <!-- Feedback -->
+    <li class="nav-item">
+      <a class="nav-link" href="#" data-page="feedback" onclick="nav('feedback');return false">
+        <span class="nav-icon"><i class="ti ti-thumb-up fs-5"></i></span>
+        <span class="text">Feedback</span>
+      </a>
+    </li>
     <!-- Section -->
     <li class="nav-item">
       <div class="nav-heading">System</div>
@@ -538,6 +552,87 @@
       <div class="row g-3" id="lib-grid"></div>
     </div>
 
+    <!-- ═══ ECONOMIC IMPACT PAGE ═══ -->
+    <div class="page-section" id="page-economics">
+      <h4 class="mb-4"><i class="ti ti-calculator me-2"></i>Economic Impact Calculator</h4>
+      <div class="card card-lg mb-4"><div class="card-body">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-3">
+            <label class="form-label small">Pest Species</label>
+            <select class="form-select" id="econ-pest" onchange="updateEconCrop()">
+              <option>Select pest...</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Crop</label>
+            <select class="form-select" id="econ-crop"></select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Field Size (ha)</label>
+            <input type="number" class="form-control" id="econ-field" value="5" min="0.1" step="0.5">
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Infestation Level</label>
+            <select class="form-select" id="econ-level">
+              <option value="light">🟢 Light</option>
+              <option value="moderate" selected>🟡 Moderate</option>
+              <option value="severe">🔴 Severe</option>
+              <option value="critical">⚫ Critical</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <label class="form-label small">Growth Stage</label>
+            <select class="form-select" id="econ-stage">
+              <option value="">Any stage</option>
+            </select>
+          </div>
+          <div class="col-auto">
+            <button class="btn btn-primary" id="econ-btn" onclick="calcEconomicImpact()"><i class="ti ti-calculator me-1"></i>Calculate</button>
+          </div>
+        </div>
+        <!-- Auto-fill from last prediction -->
+        <div id="econ-autofill" class="mt-2 small" style="display:none"></div>
+      </div></div>
+      <div id="econ-result"></div>
+    </div>
+
+    <!-- ═══ FEEDBACK HUB PAGE ═══ -->
+    <div class="page-section" id="page-feedback">
+      <h4 class="mb-4"><i class="ti ti-thumb-up me-2"></i>Prediction Feedback Hub</h4>
+      <!-- Submit Feedback -->
+      <div class="card card-lg mb-4"><div class="card-body">
+        <h6><i class="ti ti-message-check me-2"></i>Submit Feedback on Latest Prediction</h6>
+        <div id="feedback-pred-info" class="mb-3"></div>
+        <div class="row g-3 align-items-end">
+          <div class="col-auto">
+            <label class="form-label small">Was the prediction correct?</label>
+            <div class="d-flex gap-2">
+              <button class="btn btn-outline-success" id="fb-correct-btn" onclick="submitFeedback(true)"><i class="ti ti-check me-1"></i>Yes, Correct</button>
+              <button class="btn btn-outline-danger" id="fb-wrong-btn" onclick="showCorrectionForm()"><i class="ti ti-x me-1"></i>No, Wrong</button>
+            </div>
+          </div>
+        </div>
+        <div id="feedback-correction" style="display:none" class="mt-3">
+          <div class="row g-3 align-items-end">
+            <div class="col-md-3">
+              <label class="form-label small">What was the actual pest?</label>
+              <select class="form-select" id="fb-actual-pest"></select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small">Comments (optional)</label>
+              <input type="text" class="form-control" id="fb-comments" placeholder="Any additional details...">
+            </div>
+            <div class="col-auto">
+              <button class="btn btn-primary" onclick="submitFeedback(false)"><i class="ti ti-send me-1"></i>Submit Correction</button>
+            </div>
+          </div>
+        </div>
+        <div id="feedback-msg" class="mt-2"></div>
+      </div></div>
+      <!-- Feedback Analytics -->
+      <div id="feedback-analytics"></div>
+    </div>
+
   </div>
   <!-- Footer -->
   <div class="border-top px-6 py-3 text-center small text-secondary">
@@ -554,7 +649,7 @@
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="/static/js/dashboard.js?v=6"></script>
+<script src="/static/js/dashboard.js?v=7"></script>
 <!-- Print CSS -->
 <style>@media print{#miniSidebar,.border-top,.border-bottom,#toasts,#offline-banner,button,.btn,.nav-link,.form-control,.form-select,.form-check{display:none!important}#content{margin:0!important;padding:0!important}.page-section{display:block!important}.card{break-inside:avoid;border:1px solid #ddd!important;box-shadow:none!important}body{background:#fff!important;color:#000!important}.text-secondary{color:#666!important}h1,h2,h3,h4,h5,h6{color:#000!important}}</style>
 </body>

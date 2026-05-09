@@ -5,7 +5,7 @@ const API='';let curPage='dashboard',sid='s-'+Date.now(),chatH=[],lastPred=null;
 function toast(m,t='info'){const c=document.getElementById('toasts');const d=document.createElement('div');d.className=`alert alert-${t==='error'?'danger':t==='success'?'success':'info'} alert-dismissible fade show`;d.innerHTML=m+'<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';c.appendChild(d);setTimeout(()=>d.remove(),4000);}
 
 // Nav
-function nav(p){curPage=p;document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));document.getElementById('page-'+p)?.classList.add('active');document.querySelectorAll('#miniSidebar .nav-link').forEach(a=>{a.classList.toggle('active',a.dataset.page===p);});if(p==='heatmap')initMap();if(p==='weather')fetchWeather();if(p==='chat')initChat();if(p==='predict')initUpload();if(p==='analytics')loadAnalytics();if(p==='library')loadPestLibrary();}
+function nav(p){curPage=p;document.querySelectorAll('.page-section').forEach(s=>s.classList.remove('active'));document.getElementById('page-'+p)?.classList.add('active');document.querySelectorAll('#miniSidebar .nav-link').forEach(a=>{a.classList.toggle('active',a.dataset.page===p);});if(p==='heatmap')initMap();if(p==='weather')fetchWeather();if(p==='chat')initChat();if(p==='predict')initUpload();if(p==='analytics')loadAnalytics();if(p==='library')loadPestLibrary();if(p==='economics')initEconomics();if(p==='feedback')initFeedbackPage();}
 document.querySelectorAll('[data-page]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();nav(a.dataset.page);}));
 
 // Status
@@ -86,11 +86,32 @@ function resetUpload(){document.getElementById('preview-area').style.display='no
 // Confidence Gauge SVG
 function confGauge(pct,color){const r=54,c=2*Math.PI*r,off=c-(pct/100)*c;return `<svg width="130" height="130" viewBox="0 0 120 120"><circle cx="60" cy="60" r="${r}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/><circle cx="60" cy="60" r="${r}" fill="none" stroke="${color}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 60 60)" style="transition:stroke-dashoffset 1s ease"/><text x="60" y="55" text-anchor="middle" fill="#fff" font-size="22" font-weight="bold">${pct.toFixed(1)}%</text><text x="60" y="72" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="10">confidence</text></svg>`;}
 
-async function submitPrediction(){if(!window._file)return;const b=document.getElementById('pred-btn');b.disabled=true;b.innerHTML='<span class="spinner-border spinner-border-sm me-1"></span>Analyzing...';
+async function submitPrediction(){if(!window._file)return;const b=document.getElementById('pred-btn');b.disabled=true;b.innerHTML='<span class="spinner-border spinner-border-sm me-1"></span>Checking quality...';
+  // ── FEATURE 3: Image Quality Check first ──
+  let qualityData=null;
+  try{
+    const qfd=new FormData();qfd.append('file',window._file);
+    const qr=await fetch('/image-quality',{method:'POST',body:qfd});
+    qualityData=await qr.json();
+    if(!qualityData.ready_for_prediction){
+      document.getElementById('pred-result').innerHTML=`<div class="card card-lg"><div class="card-body text-center">
+        <div class="fs-1 mb-2">📸</div>
+        <h5>Image Quality: <span style="color:${qualityData.grade_color}">${qualityData.grade} (${qualityData.quality_score}/100)</span></h5>
+        <div class="mb-3">${qualityData.issues.map(i=>`<div class="text-warning small">⚠️ ${i}</div>`).join('')}</div>
+        <div class="mb-3">${qualityData.suggestions.map(s=>`<div class="text-secondary small">💡 ${s}</div>`).join('')}</div>
+        <button class="btn btn-outline-warning" onclick="forcePredict()">Analyze Anyway</button>
+        <button class="btn btn-outline-secondary ms-2" onclick="resetUpload()">Upload Better Image</button>
+      </div></div>`;
+      b.disabled=false;b.innerHTML='<i class="ti ti-search me-1"></i>Analyze';return;
+    }
+  }catch(e){/* quality check failed, proceed anyway */}
+  b.innerHTML='<span class="spinner-border spinner-border-sm me-1"></span>Analyzing...';
   const fd=new FormData();fd.append('file',window._file);fd.append('simulate_low_confidence',document.getElementById('sim-low').checked);
   try{const r=await fetch('/predict',{method:'POST',body:fd});if(!r.ok)throw new Error((await r.json()).detail||r.statusText);const d=await r.json();lastPred=d;
     const cc=d.confidence>=0.7?'high':d.confidence>=0.5?'med':'low';
     const gColor=cc==='high'?'#10b981':cc==='med'?'#f59e0b':'#ef4444';
+    // Quality badge
+    const qBadge=qualityData?`<div class="mt-2"><span class="badge" style="background:${qualityData.grade_color}20;color:${qualityData.grade_color};font-size:10px">📸 Image: ${qualityData.grade} (${qualityData.quality_score}/100)</span></div>`:'';
     // Top-3 predictions
     let top3='';
     if(d.top_3&&d.top_3.length){const medals=['🥇','🥈','🥉'];top3='<h6 class="mt-4 mb-2"><i class="ti ti-chart-bar me-1"></i>Top Predictions</h6>'+d.top_3.map((p,i)=>{const w=Math.max(5,p.confidence*100);const bc=i===0?'#10b981':i===1?'#3b82f6':'#8b5cf6';return `<div class="d-flex align-items-center gap-2 mb-2"><span class="small" style="min-width:120px">${medals[i]} ${p.pest_name}</span><div style="flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden"><div style="width:0%;height:100%;background:${bc};border-radius:4px;transition:width 1s ease" data-bar="${w}"></div></div><span class="small fw-bold" style="min-width:45px;text-align:right">${(p.confidence*100).toFixed(1)}%</span></div>`;}).join('');}
@@ -101,6 +122,7 @@ async function submitPrediction(){if(!window._file)return;const b=document.getEl
         <div class="fs-3 fw-bold mt-2">${d.pest_name}</div>
         <div class="mt-2 small text-secondary">Category: ${d.category_id} · Crop: ${d.crop||'Unknown'}</div>
         <div class="mt-2"><span class="badge ${d.confidence>=0.7?'bg-danger':'bg-warning'} bg-opacity-25" style="font-size:11px">${d.confidence>=0.7?'🔴 HIGH RISK PEST':'🟡 MODERATE RISK'}</span></div>
+        ${qBadge}
         ${top3}
       </div></div></div>
       <div class="col-md-6"><div class="card card-lg"><div class="card-body">
@@ -108,11 +130,74 @@ async function submitPrediction(){if(!window._file)return;const b=document.getEl
         <p class="text-secondary" style="line-height:1.7">${d.vlm_description}</p>
         ${d.confidence<0.7?'<div class="disclaimer-box mt-3">⚠️ Low confidence — upload a clearer image.</div>':''}
       </div></div></div>
-    </div><div class="d-flex gap-2 justify-content-center flex-wrap mt-3"><button class="btn btn-primary" onclick="nav('chat')"><i class="ti ti-message-dots me-1"></i>Get Treatment Advice</button><button class="btn btn-outline-info" onclick="shareResult()"><i class="ti ti-share me-1"></i>Share</button><button class="btn btn-outline-success" onclick="downloadPdfReport()"><i class="ti ti-file-download me-1"></i>PDF Report</button><button class="btn btn-outline-secondary" onclick="printReport()"><i class="ti ti-printer me-1"></i>Print</button></div><div id="treatment-timeline" class="mt-4"></div>`;
+    </div>
+    <div class="d-flex gap-2 justify-content-center flex-wrap mt-3">
+      <button class="btn btn-primary" onclick="nav('chat')"><i class="ti ti-message-dots me-1"></i>Get Treatment Advice</button>
+      <button class="btn btn-outline-success" onclick="nav('economics')"><i class="ti ti-calculator me-1"></i>Economic Impact</button>
+      <button class="btn btn-outline-info" onclick="shareResult()"><i class="ti ti-share me-1"></i>Share</button>
+      <button class="btn btn-outline-success" onclick="downloadPdfReport()"><i class="ti ti-file-download me-1"></i>PDF Report</button>
+      <button class="btn btn-outline-secondary" onclick="printReport()"><i class="ti ti-printer me-1"></i>Print</button>
+    </div>
+    <!-- FEATURE 5: Feedback buttons inline -->
+    <div class="card card-lg mt-3"><div class="card-body">
+      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+        <span class="small"><i class="ti ti-message-check me-1"></i>Was this prediction correct?</span>
+        <div class="d-flex gap-2" id="inline-feedback">
+          <button class="btn btn-outline-success btn-sm" onclick="quickFeedback(true)"><i class="ti ti-check me-1"></i>Yes, Correct</button>
+          <button class="btn btn-outline-danger btn-sm" onclick="quickFeedback(false)"><i class="ti ti-x me-1"></i>No, Wrong</button>
+        </div>
+      </div>
+    </div></div>
+    <div id="treatment-timeline" class="mt-4"></div>`;
     setTimeout(()=>{document.querySelectorAll('[data-bar]').forEach(el=>{el.style.width=el.dataset.bar+'%';});},100);
     toast('Prediction complete!','success');addToPredHistory(d);loadPestInfo(d.pest_name);loadTreatmentTimeline(d.pest_name);savePredToStorage();
   }catch(e){document.getElementById('pred-result').innerHTML=`<div class="alert alert-danger">${e.message}</div>`;toast(e.message,'error');}
   b.disabled=false;b.innerHTML='<i class="ti ti-search me-1"></i>Analyze';}
+
+// Force predict even with low quality
+async function forcePredict(){
+  const b=document.getElementById('pred-btn');if(!window._file)return;
+  b.disabled=true;b.innerHTML='<span class="spinner-border spinner-border-sm me-1"></span>Analyzing...';
+  const fd=new FormData();fd.append('file',window._file);fd.append('simulate_low_confidence',document.getElementById('sim-low').checked);
+  try{const r=await fetch('/predict',{method:'POST',body:fd});if(!r.ok)throw new Error((await r.json()).detail||r.statusText);const d=await r.json();lastPred=d;
+    // Simplified re-render
+    document.getElementById('pred-result').innerHTML='<div class="alert alert-success">Prediction complete despite quality warning. Reload page to see full result.</div>';
+    toast(`Detected: ${d.pest_name} (${(d.confidence*100).toFixed(1)}%)`,'success');
+    addToPredHistory(d);loadPestInfo(d.pest_name);loadTreatmentTimeline(d.pest_name);
+  }catch(e){document.getElementById('pred-result').innerHTML=`<div class="alert alert-danger">${e.message}</div>`;}
+  b.disabled=false;b.innerHTML='<i class="ti ti-search me-1"></i>Analyze';
+}
+
+// FEATURE 5: Quick inline feedback after prediction
+async function quickFeedback(isCorrect){
+  if(!lastPred){toast('No prediction to give feedback on','error');return;}
+  const el=document.getElementById('inline-feedback');
+  if(isCorrect){
+    try{
+      await fetch('/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+        session_id:sid,prediction_pest:lastPred.pest_name,confidence:lastPred.confidence,is_correct:true
+      })});
+      el.innerHTML='<span class="text-success fw-bold"><i class="ti ti-check me-1"></i>Thanks! Feedback recorded ✅</span>';
+      toast('Feedback submitted — thank you!','success');
+    }catch(e){toast('Failed to submit feedback','error');}
+  } else {
+    // Show correction dropdown inline
+    const pests=_libraryData.length?_libraryData.map(p=>p.pest_name):['Rice Leafhopper','Fall Armyworm','Green Peach Aphid','Corn Borer','Whitefly','Brown Planthopper'];
+    el.innerHTML=`<select class="form-select form-select-sm" id="quick-fb-pest" style="width:180px"><option>Select actual pest...</option>${pests.map(p=>`<option>${p}</option>`).join('')}</select>
+      <button class="btn btn-primary btn-sm" onclick="submitQuickCorrection()"><i class="ti ti-send me-1"></i>Submit</button>`;
+  }
+}
+async function submitQuickCorrection(){
+  const actual=document.getElementById('quick-fb-pest')?.value;
+  if(!actual||actual.startsWith('Select')){toast('Please select the actual pest','error');return;}
+  try{
+    await fetch('/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      session_id:sid,prediction_pest:lastPred.pest_name,confidence:lastPred.confidence,is_correct:false,actual_pest:actual
+    })});
+    document.getElementById('inline-feedback').innerHTML=`<span class="text-info fw-bold"><i class="ti ti-check me-1"></i>Correction recorded: ${actual} 📝</span>`;
+    toast('Correction submitted — this helps improve the model!','success');
+  }catch(e){toast('Failed to submit correction','error');}
+}
 
 // Chat — Enhanced with all 20 features
 let _lastSuggestions = ['🌿 What is Integrated Pest Management according to FAO guidelines?','🐛 How do I treat Fall Armyworm on corn crops?','🌧️ Is it safe to spray pesticides in rainy weather and what precautions should I take?'];
@@ -926,3 +1011,297 @@ async function loadSprayCalendar(lat,lon){
     }).join('');
   }catch(e){card.style.display='none';}
 }
+
+// ============= FEATURE 1+2: ECONOMIC IMPACT CALCULATOR =============
+let _econPestList=[];
+async function initEconomics(){
+  // Load pest library for dropdown
+  if(!_econPestList.length){
+    try{
+      const r=await fetch('/pest-library');const d=await r.json();
+      _econPestList=d.pests||[];
+      const sel=document.getElementById('econ-pest');
+      sel.innerHTML='<option>Select pest...</option>'+_econPestList.map(p=>`<option value="${p.pest_name}">${p.pest_name} (${p.severity})</option>`).join('');
+    }catch(e){}
+  }
+  // Auto-fill from last prediction
+  if(lastPred){
+    document.getElementById('econ-pest').value=lastPred.pest_name;
+    updateEconCrop();
+    document.getElementById('econ-autofill').style.display='';
+    document.getElementById('econ-autofill').innerHTML=`<span class="text-info"><i class="ti ti-link me-1"></i>Auto-filled from prediction: <strong>${lastPred.pest_name}</strong> (${(lastPred.confidence*100).toFixed(0)}%)</span>`;
+  }
+}
+
+function updateEconCrop(){
+  const pestName=document.getElementById('econ-pest').value;
+  const pest=_econPestList.find(p=>p.pest_name===pestName);
+  const cropSel=document.getElementById('econ-crop');
+  const stageSel=document.getElementById('econ-stage');
+  if(pest&&pest.crops){
+    cropSel.innerHTML=pest.crops.map(c=>`<option>${c}</option>`).join('');
+    // Load growth stages for selected crop
+    const crop=pest.crops[0];
+    loadCropStages(crop,stageSel);
+  }
+}
+
+async function loadCropStages(crop,selectEl){
+  try{
+    const r=await fetch(`/crop-stages/${encodeURIComponent(crop)}`);const d=await r.json();
+    selectEl.innerHTML='<option value="">Any stage</option>'+d.stages.map(s=>`<option value="${s.code}">${s.name} (${s.duration_days} days)</option>`).join('');
+  }catch(e){selectEl.innerHTML='<option value="">Any stage</option>';}
+}
+
+// Listen for crop change to update stages
+document.getElementById('econ-crop')?.addEventListener('change',function(){
+  loadCropStages(this.value,document.getElementById('econ-stage'));
+});
+
+async function calcEconomicImpact(){
+  const pest=document.getElementById('econ-pest').value;
+  const crop=document.getElementById('econ-crop').value;
+  const field=parseFloat(document.getElementById('econ-field').value)||1;
+  const level=document.getElementById('econ-level').value;
+  const stage=document.getElementById('econ-stage').value;
+  if(!pest||pest.startsWith('Select')){toast('Please select a pest','error');return;}
+  const btn=document.getElementById('econ-btn');btn.disabled=true;btn.innerHTML='<span class="spinner-border spinner-border-sm me-1"></span>Calculating...';
+  try{
+    const r=await fetch('/economic-impact',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+      pest_name:pest,crop:crop,field_size_ha:field,infestation_level:level,growth_stage:stage||null
+    })});
+    const d=await r.json();
+    renderEconomicResult(d);
+  }catch(e){document.getElementById('econ-result').innerHTML=`<div class="alert alert-danger">${e.message}</div>`;toast(e.message,'error');}
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-calculator me-1"></i>Calculate';
+}
+
+function renderEconomicResult(d){
+  const yi=d.yield_impact;
+  const tc=d.treatment_costs;
+  const roi=d.roi_analysis;
+  const urgColors={EMERGENCY:'#dc2626',HIGH:'#ef4444',MODERATE:'#f59e0b',LOW:'#10b981'};
+  const uc=urgColors[d.urgency]||'#6b7280';
+
+  // ROI gauge
+  function roiGauge(value,label,color){
+    const capped=Math.min(value,30);const pct=Math.min(100,(capped/30)*100);
+    const r=40,c=2*Math.PI*r,off=c-(pct/100)*c;
+    return `<div class="text-center"><svg width="100" height="100" viewBox="0 0 100 100"><circle cx="50" cy="50" r="${r}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="8"/><circle cx="50" cy="50" r="${r}" fill="none" stroke="${color}" stroke-width="8" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${off}" transform="rotate(-90 50 50)" style="transition:all 1s"/><text x="50" y="48" text-anchor="middle" fill="#fff" font-size="16" font-weight="bold">${value}:1</text><text x="50" y="62" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="8">ROI</text></svg><div class="small mt-1">${label}</div></div>`;
+  }
+
+  let stageHtml='';
+  if(d.stage_vulnerability){
+    const sv=d.stage_vulnerability;
+    const slColors={Critical:'#dc2626',High:'#ef4444',Medium:'#f59e0b',Low:'#10b981',Unknown:'#6b7280'};
+    const sc=slColors[sv.level]||'#6b7280';
+    stageHtml=`<div class="card card-lg mt-3"><div class="card-body">
+      <h6><i class="ti ti-seedling me-2"></i>Growth Stage Vulnerability</h6>
+      <div class="d-flex align-items-center gap-3 mb-2">
+        <span class="badge fs-6 px-3 py-2" style="background:${sc}20;color:${sc}">${sv.level} Risk</span>
+        <span class="small text-secondary">Stage modifier: ${sv.modifier}×</span>
+      </div>
+      <p class="small text-secondary mb-0">${sv.note}</p>
+    </div></div>`;
+  }
+
+  document.getElementById('econ-result').innerHTML=`
+    <!-- Urgency Banner -->
+    <div class="text-center mb-4">
+      <span class="safety-pill" style="background:${uc}20;color:${uc};border:1px solid ${uc}50;animation:${d.urgency==='EMERGENCY'?'pulse-red 2s infinite':'none'}">
+        ${d.urgency==='EMERGENCY'?'🚨':''}${d.urgency==='HIGH'?'⚠️':''}${d.urgency==='MODERATE'?'🟡':''}${d.urgency==='LOW'?'✅':''}
+        ${d.urgency} PRIORITY
+      </span>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="row row-cols-2 row-cols-md-4 g-3 mb-4">
+      <div class="col"><div class="card card-lg text-center"><div class="card-body py-3">
+        <div class="fs-1">💰</div>
+        <div class="fs-4 fw-bold" style="color:#ef4444">$${yi.potential_loss_usd.toLocaleString()}</div>
+        <small class="text-secondary">Potential Loss</small>
+      </div></div></div>
+      <div class="col"><div class="card card-lg text-center"><div class="card-body py-3">
+        <div class="fs-1">📉</div>
+        <div class="fs-4 fw-bold" style="color:#f59e0b">${yi.adjusted_loss_percent}%</div>
+        <small class="text-secondary">Yield Loss</small>
+      </div></div></div>
+      <div class="col"><div class="card card-lg text-center"><div class="card-body py-3">
+        <div class="fs-1">🌾</div>
+        <div class="fs-4 fw-bold">${yi.estimated_loss_tons} t</div>
+        <small class="text-secondary">Tonnage Lost</small>
+      </div></div></div>
+      <div class="col"><div class="card card-lg text-center"><div class="card-body py-3">
+        <div class="fs-1">💵</div>
+        <div class="fs-4 fw-bold" style="color:#10b981">$${d.crop_economics.total_field_value.toLocaleString()}</div>
+        <small class="text-secondary">Field Value</small>
+      </div></div></div>
+    </div>
+
+    <!-- ROI & Treatment Comparison -->
+    <div class="row g-4 mb-4">
+      <div class="col-md-4"><div class="card card-lg h-100"><div class="card-body text-center">
+        <h6 class="mb-3"><i class="ti ti-chart-arrows me-1"></i>Treatment ROI</h6>
+        <div class="d-flex justify-content-around">
+          ${roiGauge(roi.ipm_roi,'IPM','#10b981')}
+          ${roiGauge(roi.chemical_roi,'Chemical','#f59e0b')}
+        </div>
+        <div class="mt-3"><span class="badge bg-success-subtle text-success-emphasis">Best: ${roi.best_strategy}</span></div>
+      </div></div></div>
+      <div class="col-md-8"><div class="card card-lg h-100"><div class="card-body">
+        <h6 class="mb-3"><i class="ti ti-receipt me-1"></i>Treatment Cost Comparison</h6>
+        <table class="table table-sm small mb-0">
+          <thead><tr><th>Strategy</th><th>Cost/ha</th><th>Total Cost</th><th>Net Saving</th><th>ROI</th></tr></thead>
+          <tbody>
+            <tr class="${roi.best_strategy==='IPM'?'table-success':''}"><td><span class="badge bg-success-subtle text-success-emphasis">🌿 IPM Integrated</span></td><td>$${tc.ipm_integrated.per_ha}</td><td>$${tc.ipm_integrated.total.toLocaleString()}</td><td class="text-success fw-bold">$${roi.ipm_net_saving.toLocaleString()}</td><td>${roi.ipm_roi}:1</td></tr>
+            <tr class="${roi.best_strategy==='Chemical'?'table-warning':''}"><td><span class="badge bg-warning-subtle text-warning-emphasis">🧪 Chemical Only</span></td><td>$${tc.chemical_only.per_ha}</td><td>$${tc.chemical_only.total.toLocaleString()}</td><td class="text-success fw-bold">$${roi.chemical_net_saving.toLocaleString()}</td><td>${roi.chemical_roi}:1</td></tr>
+            <tr><td><span class="badge bg-info-subtle text-info-emphasis">🍃 Organic</span></td><td>$${tc.organic.per_ha}</td><td>$${tc.organic.total.toLocaleString()}</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div></div></div>
+    </div>
+
+    <!-- Recommendation -->
+    <div class="card card-lg mb-3" style="border-left:4px solid ${uc}"><div class="card-body">
+      <h6><i class="ti ti-bulb me-2" style="color:${uc}"></i>Recommendation</h6>
+      <p class="mb-0">${d.recommendation}</p>
+    </div></div>
+
+    ${stageHtml}
+
+    <!-- Crop Economics -->
+    <div class="card card-lg mt-3"><div class="card-body">
+      <h6><i class="ti ti-coins me-2"></i>Crop Economics (${d.crop})</h6>
+      <div class="row row-cols-3 g-2 small">
+        <div class="col"><span class="text-secondary">Market Price:</span> <strong>$${d.crop_economics.price_per_ton}/ton</strong></div>
+        <div class="col"><span class="text-secondary">Avg Yield:</span> <strong>${d.crop_economics.yield_per_ha} t/ha</strong></div>
+        <div class="col"><span class="text-secondary">Value/ha:</span> <strong>$${d.crop_economics.value_per_ha.toLocaleString()}</strong></div>
+      </div>
+    </div></div>
+  `;
+}
+
+// ============= FEATURE 5: FEEDBACK HUB =============
+async function initFeedbackPage(){
+  // Show last prediction info
+  const info=document.getElementById('feedback-pred-info');
+  if(lastPred){
+    info.innerHTML=`<div class="alert alert-info small mb-0"><i class="ti ti-bug me-1"></i>Latest prediction: <strong>${lastPred.pest_name}</strong> (${(lastPred.confidence*100).toFixed(1)}% confidence) · Crop: ${lastPred.crop||'Unknown'}</div>`;
+  } else {
+    info.innerHTML='<div class="alert alert-secondary small mb-0">No predictions yet. Run a prediction first to provide feedback.</div>';
+  }
+  // Populate pest dropdown for corrections
+  if(_libraryData.length){
+    document.getElementById('fb-actual-pest').innerHTML=_libraryData.map(p=>`<option>${p.pest_name}</option>`).join('');
+  } else {
+    try{
+      const r=await fetch('/pest-library');const d=await r.json();
+      _libraryData=d.pests||[];
+      document.getElementById('fb-actual-pest').innerHTML=_libraryData.map(p=>`<option>${p.pest_name}</option>`).join('');
+    }catch(e){}
+  }
+  loadFeedbackAnalytics();
+}
+
+function showCorrectionForm(){
+  document.getElementById('feedback-correction').style.display='';
+}
+
+async function submitFeedback(isCorrect){
+  if(!lastPred){toast('No prediction to give feedback on','error');return;}
+  const body={
+    session_id:sid,
+    prediction_pest:lastPred.pest_name,
+    confidence:lastPred.confidence,
+    is_correct:isCorrect,
+  };
+  if(!isCorrect){
+    body.actual_pest=document.getElementById('fb-actual-pest').value;
+    body.comments=document.getElementById('fb-comments').value;
+  }
+  try{
+    const r=await fetch('/feedback',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    document.getElementById('feedback-msg').innerHTML=`<div class="alert alert-success small">${d.message} (Total feedback: ${d.total_feedback})</div>`;
+    document.getElementById('feedback-correction').style.display='none';
+    toast(isCorrect?'Thanks for confirming!':'Correction recorded — thank you!','success');
+    loadFeedbackAnalytics();
+  }catch(e){toast('Failed to submit','error');}
+}
+
+async function loadFeedbackAnalytics(){
+  const el=document.getElementById('feedback-analytics');if(!el)return;
+  try{
+    const r=await fetch('/feedback/analytics');const d=await r.json();
+    if(!d.total_feedback||d.total_feedback===0){
+      el.innerHTML='<div class="card card-lg"><div class="card-body text-center text-secondary py-5"><i class="ti ti-chart-pie fs-1"></i><p class="mt-2">No feedback data yet. Start by verifying predictions!</p></div></div>';
+      return;
+    }
+
+    // Accuracy donut
+    const accColor=d.accuracy_rate>=80?'#10b981':d.accuracy_rate>=60?'#f59e0b':'#ef4444';
+    const accR=40,accC=2*Math.PI*accR,accOff=accC-(d.accuracy_rate/100)*accC;
+    const accGauge=`<svg width="120" height="120" viewBox="0 0 100 100"><circle cx="50" cy="50" r="${accR}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/><circle cx="50" cy="50" r="${accR}" fill="none" stroke="${accColor}" stroke-width="10" stroke-linecap="round" stroke-dasharray="${accC}" stroke-dashoffset="${accOff}" transform="rotate(-90 50 50)" style="transition:all 1s"/><text x="50" y="48" text-anchor="middle" fill="#fff" font-size="18" font-weight="bold">${d.accuracy_rate}%</text><text x="50" y="62" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="9">accuracy</text></svg>`;
+
+    // Misidentification table
+    let misTable='';
+    if(d.misidentifications&&d.misidentifications.length){
+      misTable=`<div class="card card-lg mt-3"><div class="card-body">
+        <h6><i class="ti ti-arrows-shuffle me-2"></i>Common Misidentifications</h6>
+        <table class="table table-sm small mb-0">
+          <thead><tr><th>Predicted</th><th></th><th>Actual</th><th>Count</th><th>%</th></tr></thead>
+          <tbody>${d.misidentifications.map(m=>`<tr><td class="text-danger">${m.predicted}</td><td>→</td><td class="text-success">${m.actual}</td><td>${m.count}</td><td>${m.percentage}%</td></tr>`).join('')}</tbody>
+        </table>
+      </div></div>`;
+    }
+
+    // Per-pest accuracy bars
+    let pestBars='';
+    if(d.per_pest_accuracy&&d.per_pest_accuracy.length){
+      pestBars=d.per_pest_accuracy.slice(0,8).map(p=>{
+        const bc=p.accuracy>=80?'#10b981':p.accuracy>=60?'#f59e0b':'#ef4444';
+        return `<div class="d-flex align-items-center gap-2 mb-2"><span class="small" style="min-width:140px">${p.pest}</span><div style="flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden"><div style="width:${p.accuracy}%;height:100%;background:${bc};border-radius:4px;transition:width 1s ease"></div></div><span class="small fw-bold" style="min-width:55px;text-align:right">${p.accuracy}% (${p.total})</span></div>`;
+      }).join('');
+    }
+
+    // Timeline
+    let timeline='';
+    if(d.recent_timeline&&d.recent_timeline.length){
+      timeline=d.recent_timeline.slice(0,10).map(t=>{
+        const icon=t.correct?'✅':'❌';
+        const time=new Date(t.timestamp).toLocaleTimeString();
+        return `<div class="d-flex justify-content-between py-1 small" style="border-bottom:1px solid rgba(255,255,255,0.04)"><span>${icon} ${t.pest} ${!t.correct&&t.actual?`→ ${t.actual}`:''}</span><span class="text-secondary">${(t.confidence*100).toFixed(0)}% · ${time}</span></div>`;
+      }).join('');
+    }
+
+    el.innerHTML=`
+      <div class="row g-4 mb-4">
+        <div class="col-md-4"><div class="card card-lg h-100"><div class="card-body text-center">
+          <h6 class="mb-3">Model Accuracy</h6>
+          ${accGauge}
+          <div class="mt-2 small text-secondary">${d.correct} correct / ${d.total_feedback} total</div>
+        </div></div></div>
+        <div class="col-md-4"><div class="card card-lg h-100"><div class="card-body">
+          <h6><i class="ti ti-chart-bar me-2"></i>Confidence Analysis</h6>
+          <div class="mb-3">
+            <div class="small text-secondary mb-1">Avg Confidence (Correct)</div>
+            <div class="d-flex align-items-center gap-2"><div class="conf-bar flex-fill"><div class="conf-bar-fill conf-high" style="width:${d.confidence_analysis.avg_correct_confidence*100}%"></div></div><span class="small fw-bold">${(d.confidence_analysis.avg_correct_confidence*100).toFixed(1)}%</span></div>
+          </div>
+          <div class="mb-3">
+            <div class="small text-secondary mb-1">Avg Confidence (Incorrect)</div>
+            <div class="d-flex align-items-center gap-2"><div class="conf-bar flex-fill"><div class="conf-bar-fill conf-low" style="width:${d.confidence_analysis.avg_incorrect_confidence*100}%"></div></div><span class="small fw-bold">${(d.confidence_analysis.avg_incorrect_confidence*100).toFixed(1)}%</span></div>
+          </div>
+          <div class="small text-secondary">Gap: ${(d.confidence_analysis.confidence_gap*100).toFixed(1)} percentage points</div>
+        </div></div></div>
+        <div class="col-md-4"><div class="card card-lg h-100"><div class="card-body">
+          <h6><i class="ti ti-bulb me-2"></i>Improvement Suggestions</h6>
+          ${d.suggestions.map(s=>`<div class="small mb-2"><i class="ti ti-point-filled me-1 text-info"></i>${s}</div>`).join('')}
+        </div></div></div>
+      </div>
+      ${pestBars?`<div class="card card-lg mb-4"><div class="card-body"><h6><i class="ti ti-chart-bar me-2"></i>Per-Pest Accuracy</h6>${pestBars}</div></div>`:''}
+      ${misTable}
+      ${timeline?`<div class="card card-lg mt-3"><div class="card-body"><h6><i class="ti ti-clock me-2"></i>Recent Feedback</h6>${timeline}</div></div>`:''}
+    `;
+  }catch(e){el.innerHTML='<div class="text-danger small">Failed to load analytics.</div>';}
+}
+
