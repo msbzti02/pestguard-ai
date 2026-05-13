@@ -489,9 +489,11 @@ class PestManagementAgent:
                 query_parts.append(crop)
             query_parts.append(message)
             search_query = " ".join(query_parts)
+            
+            search_query = self.retriever.expand_query(search_query, pest_name=pest_name)
 
             retrieval = self.retriever.retrieve_with_sources(search_query, top_k=5)
-            rag_context = self.retriever.retrieve(search_query, top_k=5)
+            rag_context = self.retriever.retrieve_with_rerank(search_query, top_k=5, candidate_k=15)
             rag_sources = [
                 {"source": c["source_file"], "page": c["page"]}
                 for c in retrieval["chunks"]

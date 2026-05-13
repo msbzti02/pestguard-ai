@@ -40,12 +40,12 @@ CHROMA_DIR = Path(__file__).parent.parent / "data" / "chroma_db"
 COLLECTION_NAME = "pest_management_knowledge"
 
 # Embedding model — runs locally, no API key needed
-# all-MiniLM-L6-v2 is fast, lightweight (~80MB), and good quality
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+# all-mpnet-base-v2 is better quality
+EMBEDDING_MODEL = "all-mpnet-base-v2"
 
 # Chunk settings
-CHUNK_SIZE = 500       # ~500 characters per chunk
-CHUNK_OVERLAP = 100    # 100 character overlap between chunks (preserves context)
+CHUNK_SIZE = 1000      # 1000 characters per chunk
+CHUNK_OVERLAP = 200    # 200 character overlap between chunks
 
 
 # ============================================================================
@@ -101,40 +101,97 @@ def load_all_documents(docs_dir: Path) -> list:
 # ============================================================================
 def chunk_documents(documents: list, chunk_size: int, chunk_overlap: int) -> list:
     """
-    Split documents into overlapping chunks for better retrieval.
-
-    Why chunk?
-        - LLMs have context limits — we can't feed entire PDFs
-        - Smaller chunks = more precise retrieval matches
-        - Overlap ensures no information is lost at chunk boundaries
-
-    Why 500 chars with 100 overlap?
-        - 500 chars ≈ 70-100 words ≈ a focused paragraph
-        - 100 char overlap preserves context across boundaries
-        - These values work well for agricultural/technical documents
+    Two-pass chunking:
+      Pass 1: Split by document-level headers (IDENTIFICATION:, CHEMICAL CONTROL:, etc.)
+      Pass 2: If any section is still too long, sub-split with RecursiveCharacterTextSplitter
     """
-    splitter = RecursiveCharacterTextSplitter(
+    from langchain_text_splitters import RecursiveCharacterTextSplitter
+    import re
+    from langchain_core.documents import Document
+
+    # Heading patterns found in our TXT documents
+    SECTION_PATTERN = re.compile(
+        r'\n(?=[A-Z][A-Z\s&]{3,}:)',  # Matches lines like "CHEMICAL CONTROL:" or "DAMAGE:"
+    )
+
+    primary_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size,
         chunk_overlap=chunk_overlap,
         length_function=len,
-        separators=[
-            "\n\n",     # Double newline (paragraph break) — highest priority
-            "\n",       # Single newline
-            ". ",       # Sentence end
-            ", ",       # Clause break
-            " ",        # Word break
-            "",         # Character break (last resort)
-        ],
-        is_separator_regex=False,
+        separators=["\n## ", "\n### ", "\n\n\n", "\n\n", "\n", ". ", " ", ""],
     )
 
-    chunks = splitter.split_documents(documents)
-    return chunks
+    all_chunks = []
+
+    for doc in documents:
+        text = doc.page_content
+        file_type = doc.metadata.get("file_type", "unknown")
+
+        if file_type == "txt":
+            # Try section-aware splitting first
+            sections = SECTION_PATTERN.split(text)
+            for section in sections:
+                section = section.strip()
+                if len(section) < 50:
+                    continue
+                if len(section) <= chunk_size:
+                    # Section fits in one chunk — keep it whole
+                    chunk = Document(
+                        page_content=section,
+                        metadata={**doc.metadata, "chunk_strategy": "section_aware"}
+                    )
+                    all_chunks.append(chunk)
+                else:
+                    # Section too long — sub-split
+                    sub_chunks = primary_splitter.split_documents(
+                        [Document(page_content=section, metadata=doc.metadata)]
+                    )
+                    for sc in sub_chunks:
+                        sc.metadata["chunk_strategy"] = "section_subsplit"
+                    all_chunks.extend(sub_chunks)
+        else:
+            # PDF documents — use standard recursive splitting
+            pdf_chunks = primary_splitter.split_documents([doc])
+            for pc in pdf_chunks:
+                pc.metadata["chunk_strategy"] = "recursive"
+            all_chunks.extend(pdf_chunks)
+
+    return all_chunks
 
 
 # ============================================================================
 # Embedding & Storage in ChromaDB
 # ============================================================================
+def extract_pest_tags(text: str) -> str:
+    """Extract pest names mentioned in the chunk."""
+    pest_keywords = [
+        "aphid", "borer", "armyworm", "locust", "whitefly", "leafroller",
+        "leaf roller", "caterpillar", "mite", "thrip", "weevil", "beetle",
+        "maggot", "fruit fly", "psyllid", "leaf miner", "rootworm",
+        "bollworm", "moth", "scale", "nematode", "grub",
+    ]
+    found = [kw for kw in pest_keywords if kw in text.lower()]
+    return ",".join(found) if found else "general"
+
+def extract_topic_tag(text: str) -> str:
+    """Classify the chunk's topic."""
+    text_upper = text.upper()
+    if any(kw in text_upper for kw in ["CHEMICAL CONTROL", "PESTICIDE", "SPRAY", "INSECTICIDE"]):
+        return "chemical_control"
+    elif any(kw in text_upper for kw in ["BIOLOGICAL", "PREDATOR", "PARASITOID", "NATURAL ENEMY"]):
+        return "biological_control"
+    elif any(kw in text_upper for kw in ["IDENTIFICATION", "DAMAGE", "SYMPTOM", "CHARACTERISTIC"]):
+        return "identification"
+    elif any(kw in text_upper for kw in ["WEATHER", "TEMPERATURE", "WIND", "RAIN", "HUMIDITY"]):
+        return "weather_safety"
+    elif any(kw in text_upper for kw in ["CULTURAL", "ROTATION", "SANITATION", "PREVENTION"]):
+        return "cultural_control"
+    elif any(kw in text_upper for kw in ["TIMING", "THRESHOLD", "WHEN TO", "GROWTH STAGE"]):
+        return "timing_threshold"
+    elif any(kw in text_upper for kw in ["IPM", "INTEGRATED", "MANAGEMENT STRATEGY"]):
+        return "ipm"
+    return "general"
+
 def build_chroma_index(chunks: list, chroma_dir: Path, collection_name: str, model_name: str):
     """
     Generate embeddings for all chunks and store them in ChromaDB.
@@ -188,6 +245,10 @@ def build_chroma_index(chunks: list, chroma_dir: Path, collection_name: str, mod
                 "file_type": chunk.metadata.get("file_type", "unknown"),
                 "page": chunk.metadata.get("page", 0),
                 "chunk_index": i + j,
+                "chunk_strategy": chunk.metadata.get("chunk_strategy", "recursive"),
+                "pest_tags": extract_pest_tags(chunk.page_content),
+                "topic": extract_topic_tag(chunk.page_content),
+                "char_count": len(chunk.page_content),
             }
             for j, chunk in enumerate(batch)
         ]

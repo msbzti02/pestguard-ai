@@ -1,0 +1,30 @@
+VEGETABLE CROP PEST MANAGEMENT GUIDE
+=======================================
+Source: Compiled from various agricultural extension services.
+
+COMMON VEGETABLE PESTS:
+1. Tomato Hornworm (Manduca quinquemaculata)
+2. Whitefly (Bemisia tabaci)
+3. Spider Mites (Tetranychus urticae)
+4. Thrips (Frankliniella occidentalis)
+5. Leaf Miners (Liriomyza spp.)
+
+TOMATO HORNWORM — MANAGEMENT:
+- Chemical: Spinosad, Carbaryl (if severe)
+- Biological: Bt (Bacillus thuringiensis), Trichogramma wasps, Braconid wasps
+- Cultural: Hand-picking, tilling soil in fall to destroy pupae
+- Threshold: Treat when defoliation exceeds 10%
+
+WHITEFLY — MANAGEMENT:
+- Chemical: Imidacloprid, Pyriproxyfen, Insecticidal soaps
+- Biological: Encarsia formosa, Delphastus catalinae (ladybird beetle)
+- Cultural: Reflective mulches, yellow sticky traps, weed management
+- Note: High risk of resistance; rotate chemical modes of action
+
+SPIDER MITES — MANAGEMENT:
+- Chemical: Abamectin, Spiromesifen, Neem oil
+- Biological: Phytoseiulus persimilis (predatory mite)
+- Cultural: Reduce dust, avoid water stress, overhead irrigation can suppress
+- Threshold: Treat before visible webbing occurs
+
+⚠️ DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

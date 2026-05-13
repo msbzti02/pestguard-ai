@@ -1,0 +1,27 @@
+PESTICIDE RESISTANCE MANAGEMENT GUIDE
+========================================
+Source: Insecticide Resistance Action Committee (IRAC).
+
+WHAT IS PESTICIDE RESISTANCE?
+Resistance is the heritable decrease in a pest population's susceptibility to a pesticide that previously controlled it.
+
+MECHANISMS OF RESISTANCE:
+1. Metabolic resistance: Pests detoxify or destroy the toxin faster.
+2. Target-site resistance: The physical site where the toxin binds is mutated.
+3. Penetration resistance: Thicker cuticles prevent the toxin from entering.
+4. Behavioral resistance: Pests avoid treated areas.
+
+CORE RESISTANCE MANAGEMENT STRATEGIES:
+- Rotate Mode of Action (MoA): NEVER apply pesticides from the same IRAC group in consecutive generations of the pest.
+- Use Mixtures: Combine two or more active ingredients with different MoAs, provided they are both effective against the pest.
+- Follow Label Rates: Applying sub-lethal doses rapidly accelerates resistance development.
+- Preserve Refuges: Leave small, untreated areas to maintain susceptible pest populations that will mate with resistant individuals.
+
+COMMON IRAC GROUPS TO ROTATE:
+- Group 1: Acetylcholinesterase inhibitors (e.g., Carbamates, Organophosphates)
+- Group 3: Sodium channel modulators (e.g., Pyrethroids)
+- Group 4: Nicotinic acetylcholine receptor agonists (e.g., Neonicotinoids)
+- Group 5: Nicotinic acetylcholine receptor allosteric modulators (e.g., Spinosyns)
+- Group 28: Ryanodine receptor modulators (e.g., Diamides)
+
+⚠️ DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

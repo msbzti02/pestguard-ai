@@ -1,0 +1,29 @@
+COFFEE CROP PEST MANAGEMENT GUIDE
+===================================
+Source: Global Coffee Research Institute.
+
+COMMON COFFEE PESTS:
+1. Coffee Berry Borer (Hypothenemus hampei)
+2. Coffee Leaf Miner (Leucoptera coffeella)
+3. Coffee White Stem Borer (Monochamus leuconotus)
+4. Root-knot Nematodes (Meloidogyne spp.)
+
+COFFEE BERRY BORER (CBB) — MANAGEMENT:
+- Chemical: Cyantraniliprole, Beauveria bassiana sprays (biological/chemical hybrid)
+- Biological: Cephalonomia stephanoderis, Prorops nasuta (bethylid wasps)
+- Cultural: Strict harvesting hygiene (strip picking), destroying unharvested or fallen berries
+- Monitoring: Broca traps baited with methanol/ethanol mixtures
+
+COFFEE LEAF MINER — MANAGEMENT:
+- Chemical: Cartap, Thiamethoxam
+- Biological: Predatory wasps (Vespidae) and diverse parasitoid complexes
+- Cultural: Provide adequate shade (shade-grown coffee has lower miner incidence)
+- Threshold: 20-30% of leaves mined
+
+COFFEE WHITE STEM BORER — MANAGEMENT:
+- Chemical: Stem banding with Chlorpyrifos (where permitted)
+- Biological: Minimal, though woodpeckers provide some natural control
+- Cultural: Uprooting and burning infested trees; scrubbing stems to dislodge eggs
+- Note: Chiefly a problem in Arabica coffee.
+
+⚠️ DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

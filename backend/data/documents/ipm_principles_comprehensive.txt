@@ -1,0 +1,38 @@
+COMPREHENSIVE INTEGRATED PEST MANAGEMENT (IPM) GUIDE
+=======================================================
+Source: FAO IPM Guidelines.
+
+PRINCIPLE 1: PREVENTION AND SUPPRESSION
+- Crop rotation to break pest life cycles
+- Use of resistant or tolerant cultivars
+- Proper seed bed preparation and sowing dates
+- Balanced fertilization and irrigation
+- Field sanitation and hygiene (cleaning equipment, removing infested plants)
+
+PRINCIPLE 2: MONITORING
+- Regular field scouting (at least weekly)
+- Use of traps (pheromone, sticky, light)
+- Keeping accurate records of pest incidence and weather
+- Identifying both pests and their natural enemies
+
+PRINCIPLE 3: DECISION MAKING (THRESHOLDS)
+- Economic Threshold (ET): The pest density at which control measures should be applied to prevent an increasing pest population from reaching the Economic Injury Level.
+- Economic Injury Level (EIL): The lowest population density that will cause economic damage.
+- DO NOT treat if pest levels are below the threshold.
+
+PRINCIPLE 4: NON-CHEMICAL METHODS (PRIORITY)
+- Biological control: Conservation, augmentation, or introduction of natural enemies.
+- Cultural control: Modifying the environment to make it less suitable for pests.
+- Physical/Mechanical control: Hand-picking, netting, barriers, mulches.
+
+PRINCIPLE 5: CHEMICAL CONTROL (AS LAST RESORT)
+- Use highly selective pesticides when possible
+- Target applications to specific areas (spot treatments)
+- Always follow pesticide resistance management strategies
+- Strictly adhere to label rates, timing, and safety precautions
+
+PRINCIPLE 6: EVALUATION
+- Assess the effectiveness of applied control measures
+- Adapt future strategies based on results
+
+⚠️ DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

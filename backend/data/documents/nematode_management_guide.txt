@@ -1,0 +1,25 @@
+NEMATODE MANAGEMENT AND CONTROL GUIDE
+=======================================
+Source: Plant Pathology and Nematology References.
+
+WHAT ARE PLANT-PARASITIC NEMATODES?
+Microscopic roundworms that live in the soil and feed on plant roots, causing stunting, yellowing, and significant yield loss.
+
+COMMON NEMATODES:
+1. Root-Knot Nematodes (Meloidogyne spp.) - Causes galls/knots on roots.
+2. Soybean Cyst Nematode (Heterodera glycines) - Cysts form on roots.
+3. Lesion Nematodes (Pratylenchus spp.) - Causes dark lesions on roots and tubers.
+
+MANAGEMENT PRINCIPLES:
+1. Soil Sampling: Nematodes cannot be seen with the naked eye. Soil tests by diagnostic labs are essential to identify species and population densities.
+2. Crop Rotation: The most effective cultural control. Rotate with non-host crops. For example, rotate corn (non-host) with soybeans (host for SCN).
+3. Resistant Varieties: Use plant varieties bred for resistance to specific nematode strains (e.g., PI 88788 for Soybean Cyst Nematode).
+4. Chemical Control (Nematicides):
+   - Fumigants (e.g., 1,3-Dichloropropene, Metam sodium): Applied pre-plant to sterilize soil. Highly toxic and expensive.
+   - Non-fumigants (e.g., Oxamyl, Fluopyram): Applied at planting or as seed treatments.
+5. Biological Control:
+   - Pasteuria penetrans (bacterial parasite of nematodes)
+   - Purpureocillium lilacinum (fungus that infects nematode eggs)
+6. Cultural Control: Soil solarization, planting cover crops (like marigold, which produces alpha-terthienyl that is toxic to nematodes).
+
+⚠️ DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

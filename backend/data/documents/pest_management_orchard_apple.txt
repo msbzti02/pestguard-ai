@@ -1,0 +1,30 @@
+ORCHARD AND APPLE PEST MANAGEMENT GUIDE
+==========================================
+Source: Tree Fruit IPM Programs.
+
+COMMON APPLE PESTS:
+1. Codling Moth (Cydia pomonella)
+2. Apple Maggot (Rhagoletis pomonella)
+3. Plum Curculio (Conotrachelus nenuphar)
+4. San Jose Scale (Quadraspidiotus perniciosus)
+5. Rosy Apple Aphid (Dysaphis plantaginea)
+
+CODLING MOTH — MANAGEMENT:
+- Chemical: Chlorantraniliprole, Spinetoram, Acetamiprid
+- Biological: Cydia pomonella granulovirus (CpGV), Trichogramma wasps
+- Cultural: Mating disruption (pheromone ties/dispensers), trunk banding, sanitation
+- Monitoring: Degree-day models coupled with pheromone trap catches
+
+APPLE MAGGOT — MANAGEMENT:
+- Chemical: Phosmet, Assail, Spinosad
+- Biological: Minimal biological control options; reliance on chemical and cultural
+- Cultural: Pick up and destroy dropped fruit weekly to prevent larvae from entering soil
+- Monitoring: Red sphere sticky traps baited with apple volatile lures
+
+SAN JOSE SCALE — MANAGEMENT:
+- Chemical: Dormant horticultural oil sprays, Pyriproxyfen, Buprofezin
+- Biological: Encarsia perniciosi (parasitic wasp), lady beetles
+- Cultural: Prune out heavily infested branches to improve spray coverage
+- Timing: Critical to target the "crawler" stage in early summer.
+
+⚠️ DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

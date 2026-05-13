@@ -1,0 +1,29 @@
+GREENHOUSE & INDOOR PEST MANAGEMENT GUIDE
+===========================================
+Source: Controlled Environment Agriculture (CEA) Guidelines.
+
+COMMON GREENHOUSE PESTS:
+1. Greenhouse Whitefly (Trialeurodes vaporariorum)
+2. Fungus Gnats (Bradysia spp.)
+3. Western Flower Thrips (Frankliniella occidentalis)
+4. Two-Spotted Spider Mite (Tetranychus urticae)
+
+FUNGUS GNATS — MANAGEMENT:
+- Chemical: Pyriproxyfen (IGR), Bacillus thuringiensis israelensis (Bti) soil drench
+- Biological: Stratiolaelaps scimitus (soil predator mite), Steinernema feltiae (nematodes)
+- Cultural: Avoid overwatering, improve drainage, remove algae build-up
+- Threshold: Presence of adults on yellow sticky cards warrants larval treatment
+
+WESTERN FLOWER THRIPS — MANAGEMENT:
+- Chemical: Spinosad, Beauveria bassiana, Horticultural Oils
+- Biological: Amblyseius swirskii (predatory mites), Orius spp. (pirate bugs)
+- Cultural: Screen vents (fine mesh), strict sanitation, remove weed reservoirs
+- Threat: Vector for Tomato Spotted Wilt Virus (TSWV) and Impatiens Necrotic Spot Virus (INSV).
+
+TWO-SPOTTED SPIDER MITE — MANAGEMENT:
+- Chemical: Bifenazate, Spiromesifen, Neem oil
+- Biological: Phytoseiulus persimilis (highly effective predator mite in high humidity)
+- Cultural: Maintain higher humidity (>60%), avoid excess nitrogen fertilizer
+- Note: Mites rapidly develop resistance; rely heavily on biologicals.
+
+⚠️ DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

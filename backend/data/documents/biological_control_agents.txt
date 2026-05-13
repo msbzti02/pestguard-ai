@@ -1,0 +1,25 @@
+COMPREHENSIVE BIOLOGICAL CONTROL AGENTS REFERENCE
+====================================================
+
+PREDATORS (Consume many pests):
+- Ladybird Beetles (Coccinellidae): Both adults and larvae voraciously consume aphids, scale insects, and mites.
+- Lacewings (Chrysopidae): Larvae (aphid lions) feed on aphids, thrips, mites, and small caterpillars.
+- Hoverflies (Syrphidae): Larvae are excellent aphid predators.
+- Ground Beetles (Carabidae): Feed on soil-dwelling pests like cutworms, root maggots, and snail/slugs.
+- Predatory Mites (Phytoseiidae): Crucial for controlling spider mites and thrips.
+
+PARASITOIDS (Develop inside or on a host):
+- Trichogramma wasps: Tiny wasps that parasitize the eggs of many moth/butterfly pests (e.g., corn borer, bollworm).
+- Aphidius wasps: Parasitize aphids, turning them into rigid, bronzed 'mummies'.
+- Encarsia formosa: Primary parasitoid used for greenhouse whitefly control.
+
+MICROBIAL AGENTS (Pathogens):
+- Bacillus thuringiensis (Bt): A bacterium toxic to specific insect orders (caterpillars, mosquito larvae, some beetles) when ingested. Safe for beneficials.
+- Beauveria bassiana: A fungus that causes white muscardine disease in many insects (whiteflies, aphids, thrips). Requires high humidity.
+- Metarhizium anisopliae: A fungus causing green muscardine disease, often used against soil pests and locusts.
+- Nuclear Polyhedrosis Virus (NPV): Highly specific viruses used primarily against caterpillar pests like fall armyworm.
+
+ENTOMOPATHOGENIC NEMATODES:
+- Steinernema spp. and Heterorhabditis spp.: Microscopic worms applied to soil to control grubs, weevil larvae, and fungus gnats.
+
+⚠️ DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

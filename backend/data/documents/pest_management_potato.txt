@@ -1,0 +1,29 @@
+POTATO AND ROOT CROP PEST MANAGEMENT GUIDE
+===========================================
+Source: Root Crop Agricultural Extensions.
+
+COMMON POTATO PESTS:
+1. Colorado Potato Beetle (Leptinotarsa decemlineata)
+2. Potato Leafhopper (Empoasca fabae)
+3. Wireworms (Elateridae)
+4. Potato Psyllid (Bactericerca cockerelli)
+
+COLORADO POTATO BEETLE — MANAGEMENT:
+- Chemical: Spinosad, Abamectin, Neonicotinoids (high resistance risk, rotate MoA strictly)
+- Biological: Beauveria bassiana, Bt tenebrionis (specifically for beetle larvae)
+- Cultural: Crop rotation (minimum 1/2 mile from previous year's field), trenching with plastic lining
+- Threshold: 1 adult or 4 small larvae per plant
+
+WIREWORM — MANAGEMENT:
+- Chemical: In-furrow application of Ethoprop or Bifenthrin at planting
+- Biological: Entomopathogenic nematodes (Heterorhabditis bacteriophora)
+- Cultural: Avoid planting potatoes immediately after pasture or sod; cultivate fields deeply before planting
+- Note: There are no effective rescue treatments once damage is observed. Preventive management is critical.
+
+POTATO PSYLLID — MANAGEMENT:
+- Chemical: Spiromesifen, Spirotetramat, Pymetrozine
+- Biological: Generalist predators (lacewings, lady beetles)
+- Cultural: Reflective mulches to deter landing
+- Threat: Vector of Zebra Chip disease; strict management is essential.
+
+⚠️ DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

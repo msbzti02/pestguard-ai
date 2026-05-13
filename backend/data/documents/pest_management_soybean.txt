@@ -1,0 +1,30 @@
+SOYBEAN PEST MANAGEMENT GUIDE
+===============================
+Source: Compiled from Agricultural Extension Services.
+
+COMMON SOYBEAN PESTS:
+1. Soybean Aphid (Aphis glycines)
+2. Bean Leaf Beetle (Cerotoma trifurcata)
+3. Stink Bugs (Brown Marmorated, Green, Brown)
+4. Soybean Looper (Chrysodeixis includens)
+5. Spider Mites (Tetranychus urticae)
+
+SOYBEAN APHID — MANAGEMENT:
+- Chemical: Lambda-cyhalothrin, Bifenthrin, Chlorpyrifos
+- Biological: Asian lady beetles (Harmonia axyridis), insidious flower bugs (Orius insidiosus)
+- Cultural: Early planting, use of aphid-resistant soybean varieties (Rag genes)
+- Threshold: 250 aphids per plant, with populations increasing
+
+BEAN LEAF BEETLE — MANAGEMENT:
+- Chemical: Seed treatments (Thiamethoxam, Imidacloprid) protect early stages; foliar pyrethroids for adults
+- Biological: Ground beetles, parasitic tachinid flies
+- Cultural: Delayed planting can reduce early colonizers
+- Threshold: 20% defoliation during pod-fill stages
+
+STINK BUGS — MANAGEMENT:
+- Chemical: Acephate, Pyrethroids, Neonicotinoids (for early instars)
+- Biological: Trissolcus wasps (egg parasitoids)
+- Cultural: Trap crops (e.g., early-planted soybeans) to draw stink bugs away from main fields
+- Threshold: 1 stink bug per foot of row during pod fill
+
+⚠️ DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

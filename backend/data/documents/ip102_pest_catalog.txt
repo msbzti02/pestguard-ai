@@ -1,0 +1,51 @@
+IP102 DATASET — COMPLETE PEST CATALOG
+========================================
+A reference listing major pest categories in the IP102 dataset with common names and hosts.
+
+RICE PESTS:
+Category 0: Rice Leaf Roller (Cnaphalocrocis medinalis)
+Category 1: Rice Leaf Caterpillar
+Category 2: Paddy Stem Maggot (Chlorops oryzae)
+Category 3: Asiatic Rice Borer (Chilo suppressalis)
+Category 4: Yellow Rice Borer (Scirpophaga incertulas)
+Category 5: Rice Gall Midge (Orseolia oryzae)
+Category 6: Rice Stemfighter
+Category 7: Rice Water Weevil (Lissorhoptrus oryzophilus)
+
+CORN PESTS:
+Category 12: Corn Borer (Ostrinia furnacalis / nubilalis)
+Category 13: Army worm (Mythimna separata)
+Category 14: Aphid (Rhopalosiphum padi)
+Category 15: Cutworm (Agrotis ipsilon)
+
+WHEAT PESTS:
+Category 20: Wheat Blossom Midge (Sitodiplosis mosellana)
+Category 21: Wheat Phloeothrips
+Category 22: Wheat Sawfly
+
+BEET PESTS:
+Category 30: Beet Army Worm (Spodoptera exigua)
+Category 31: Beet Spot Flies
+Category 32: Meadow Moth (Loxostege sticticalis)
+
+ALFALFA PESTS:
+Category 40: Alfalfa Weevil (Hypera postica)
+Category 41: Alfalfa Plant Bug
+Category 42: Tarnished Plant Bug (Lygus lineolaris)
+
+CITRUS PESTS:
+Category 50: Citrus Leaf Miner (Phyllocnistis citrella)
+Category 51: Citrus Red Mite (Panonychus citri)
+Category 52: Citrus Rust Mite (Phyllocoptruta oleivora)
+Category 53: Papilio xuthus
+
+MANGO PESTS:
+Category 60: Mango Flat Beak Leafhopper
+Category 61: Mango Leafhopper (Idioscopus clypealis)
+Category 62: Mango Shoot Borer (Chlumetia transversa)
+
+CABBAGE PESTS:
+Category 70: Cabbage Webworm (Hellula undalis)
+Category 71: Cabbage Moth (Mamestra brassicae)
+Category 72: Diamondback Moth (Plutella xylostella)
+Category 73: Cabbage Butterfly (Pieris rapae)

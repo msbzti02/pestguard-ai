@@ -1,0 +1,36 @@
+CITRUS PEST MANAGEMENT GUIDE
+==============================
+Source: Compiled from FAO and CABI references.
+
+COMMON CITRUS PESTS:
+1. Citrus Leaf Miner (Phyllocnistis citrella)
+2. Citrus Psyllid (Diaphorina citri) — vector for Huanglongbing (HLB)
+3. Mediterranean Fruit Fly (Ceratitis capitata)
+4. Citrus Red Mite (Panonychus citri)
+5. Citrus Whitefly (Dialeurodes citri)
+
+CITRUS LEAF MINER — MANAGEMENT:
+- Chemical: Abamectin, Imidacloprid (systemic)
+- Biological: Ageniaspis citricola parasitoid, Cirrospilus quadristriatus
+- Cultural: Remove and destroy infested leaves, avoid excess nitrogen
+- Threshold: Treat when >25% of new flush leaves show serpentine mines
+
+CITRUS PSYLLID — MANAGEMENT:
+- Chemical: Dimethoate, Spirotetramat (systemic)
+- Biological: Tamarixia radiata parasitoid, Diaphorencyrtus aligarhensis
+- Cultural: Remove alternate hosts (e.g., Murraya paniculata), monitor regularly
+- CRITICAL: Vector for HLB — zero tolerance, immediate action required
+
+MEDITERRANEAN FRUIT FLY — MANAGEMENT:
+- Chemical: Spinosad bait sprays, Malathion
+- Biological: Diachasmimorpha longicaudata (parasitic wasp)
+- Cultural: Strict field sanitation, collect and destroy fallen fruit, fruit bagging
+- Monitoring: Pheromone traps (trimedlure) essential for detection
+
+CITRUS RED MITE — MANAGEMENT:
+- Chemical: Spirodiclofen, Propargite, Horticultural oils
+- Biological: Predatory mites (Euseius tularensis), Stethorus beetles
+- Cultural: Maintain adequate irrigation (drought stress exacerbates mites)
+- Threshold: 5 mites per leaf
+
+⚠️ DISCLAIMER: This information is for guidance only. Consult a certified agricultural expert before application.

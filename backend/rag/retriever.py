@@ -33,7 +33,7 @@ except ImportError:
 # ============================================================================
 CHROMA_DIR = Path(__file__).parent.parent / "data" / "chroma_db"
 COLLECTION_NAME = "pest_management_knowledge"
-EMBEDDING_MODEL = "all-MiniLM-L6-v2"
+EMBEDDING_MODEL = "all-mpnet-base-v2"
 
 
 class PestKnowledgeRetriever:
@@ -178,6 +178,136 @@ class PestKnowledgeRetriever:
             return "No sufficiently relevant passages found in the knowledge base."
 
         return "\n---\n".join(formatted_chunks)
+
+    def retrieve_with_rerank(self, query: str, top_k: int = 5, candidate_k: int = 15) -> str:
+        """
+        Two-stage retrieval:
+          1. Fetch candidate_k candidates via vector similarity (broad recall)
+          2. Re-rank by keyword overlap + distance scoring (precision)
+          3. Return top_k best results
+        """
+        self._ensure_loaded()
+
+        # Stage 1: Broad retrieval
+        results = self._collection.query(
+            query_texts=[query],
+            n_results=candidate_k,
+            include=["documents", "metadatas", "distances"],
+        )
+
+        documents = results["documents"][0]
+        metadatas = results["metadatas"][0]
+        distances = results["distances"][0]
+
+        if not documents:
+            return "No relevant agricultural knowledge found in the database."
+
+        # Stage 2: Re-rank
+        query_terms = set(query.lower().split())
+        scored = []
+
+        for doc, meta, dist in zip(documents, metadatas, distances):
+            # Base score: inverse distance (lower distance = higher score)
+            base_score = 1.0 / (1.0 + dist) if dist is not None else 1.0
+
+            # Keyword bonus: how many query terms appear in the chunk
+            doc_lower = doc.lower()
+            keyword_hits = sum(1 for term in query_terms if term in doc_lower)
+            keyword_bonus = keyword_hits * 0.1
+
+            # Length bonus: prefer chunks with more content (more informative)
+            length_bonus = min(len(doc) / 2000, 0.15)
+
+            # Section bonus: prefer chunks that have structured sections
+            section_indicators = ["MANAGEMENT:", "CONTROL:", "CHEMICAL", "BIOLOGICAL",
+                                  "TREATMENT", "THRESHOLD", "IDENTIFICATION"]
+            section_bonus = 0.1 if any(s in doc.upper() for s in section_indicators) else 0
+
+            final_score = base_score + keyword_bonus + length_bonus + section_bonus
+            scored.append((doc, meta, dist, final_score))
+
+        # Sort by final score descending
+        scored.sort(key=lambda x: x[3], reverse=True)
+
+        # Take top_k
+        formatted_chunks = []
+        for i, (doc, meta, dist, score) in enumerate(scored[:top_k]):
+            source = meta.get("source_file", "unknown")
+            page = meta.get("page", None)
+            citation = f"({source}, p.{page})" if page and page > 0 else f"({source})"
+            clean_text = doc.strip()
+            if len(clean_text) < 10:
+                continue
+            formatted_chunks.append(f"[{i + 1}] {citation} [relevance: {score:.2f}]\n{clean_text}")
+
+        return "\n---\n".join(formatted_chunks) if formatted_chunks else "No relevant passages found."
+
+    def retrieve_filtered(self, query: str, pest_filter: str = None,
+                          topic_filter: str = None, top_k: int = 5) -> str:
+        """
+        Retrieve with optional metadata filtering.
+        Example: retrieve_filtered("how to control", pest_filter="aphid", topic_filter="chemical_control")
+        """
+        self._ensure_loaded()
+
+        where_filter = {}
+        if pest_filter:
+            where_filter["pest_tags"] = {"$contains": pest_filter.lower()}
+        if topic_filter:
+            where_filter["topic"] = topic_filter
+
+        kwargs = {
+            "query_texts": [query],
+            "n_results": top_k,
+        }
+        if where_filter:
+            kwargs["where"] = where_filter
+
+        results = self._collection.query(**kwargs)
+        
+        documents = results["documents"][0]
+        metadatas = results["metadatas"][0]
+        distances = results["distances"][0] if results.get("distances") else [None] * len(documents)
+
+        if not documents or len(documents) == 0:
+            return "No relevant passages found with the specified filters."
+
+        formatted_chunks = []
+        for i, (doc, meta, dist) in enumerate(zip(documents, metadatas, distances)):
+            source = meta.get("source_file", "unknown")
+            page = meta.get("page", None)
+            citation = f"({source}, p.{page})" if page and page > 0 else f"({source})"
+            clean_text = doc.strip()
+            if len(clean_text) < 10:
+                continue
+            formatted_chunks.append(f"[{i + 1}] {citation}\n{clean_text}")
+
+        return "\n---\n".join(formatted_chunks) if formatted_chunks else "No relevant passages found."
+
+    def expand_query(self, original_query: str, pest_name: str = None) -> str:
+        """
+        Expand a user query with agricultural synonyms and technical terms
+        to improve retrieval recall.
+        """
+        expansions = {
+            "kill": "control manage treat eliminate",
+            "bug": "insect pest arthropod",
+            "spray": "pesticide application treatment chemical foliar",
+            "organic": "biological cultural natural IPM non-chemical",
+            "safe": "safety precaution protective threshold timing",
+            "when": "timing threshold growth stage application schedule",
+            "prevent": "prevention cultural control prophylactic resistant variety",
+        }
+
+        expanded = original_query
+        for trigger, expansion in expansions.items():
+            if trigger in original_query.lower():
+                expanded += f" {expansion}"
+
+        if pest_name and pest_name not in ("Unknown", "Uncertain"):
+            expanded += f" {pest_name} management control"
+
+        return expanded
 
     def retrieve_with_sources(self, query: str, top_k: int = 5) -> dict:
         """
